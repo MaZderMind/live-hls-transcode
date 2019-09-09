@@ -1,0 +1,5 @@
+/.idea
+/*.iml
+/tmp
+/vendor/
+/live-hls-transcode
