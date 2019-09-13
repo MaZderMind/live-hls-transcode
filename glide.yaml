@@ -2,3 +2,5 @@ package: github.com/mazdermind/live-hls-transcode
 import:
 - package: github.com/alexflint/go-arg
   version: ^1.1.0
+- package: github.com/cosmtrek/air
+  version: ^1.10.0
