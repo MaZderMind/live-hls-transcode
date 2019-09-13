@@ -8,8 +8,13 @@ import (
 
 func main() {
 	arguments := NewCliArgumentsParser().GetCliArguments()
-	directoryIndex := NewDirectoryIndex(arguments.RootDir)
-	http.HandleFunc("/", directoryIndex.Handle)
+	directoryIndex := NewDirectoryIndex(arguments.RootDir, arguments.Extensions)
+
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		directoryIndex.Handle(writer, request, func(calculatedPath string) {
+			fmt.Fprintf(writer, "Serving File %s", calculatedPath)
+		})
+	})
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))

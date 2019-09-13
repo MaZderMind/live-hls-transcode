@@ -25,12 +25,14 @@ func NewCliArgumentsParser() CliArgumentsParser {
 func (c CliArgumentsParser) GetCliArguments() CliArguments {
 	if !c.parsed {
 
-		c.cliArguments.Extensions = make([]string, 0)
+		c.cliArguments.Extensions = []string{
+			"avi", "ts", "m2ts", "mp2", "mpeg", "mpg",
+		}
 		c.cliArguments.TempDir = "/tmp/live-hls-transcode"
 		c.cliArguments.HttpBind = ":8042"
 
 		arg.MustParse(&c.cliArguments)
 		c.parsed = true
 	}
-	return c.cliArguments;
+	return c.cliArguments
 }
