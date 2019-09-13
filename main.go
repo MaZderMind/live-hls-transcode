@@ -7,19 +7,15 @@ import (
 )
 
 func main() {
-	var arguments = ParseCliArguments()
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "text/plain")
-		if _, err := fmt.Fprintf(w, "Root-Dir: %s\nArgs: %s", arguments.RootDir, r.URL.Query()); err != nil {
-			log.Fatal(err)
-		}
-	})
+	arguments := NewCliArgumentsParser().GetCliArguments()
+	directoryIndex := NewDirectoryIndex(arguments.RootDir)
+	http.HandleFunc("/", directoryIndex.Handle)
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	if err := http.ListenAndServe(":8042", nil); err != nil {
+	fmt.Printf("Listening on %s\n", arguments.HttpBind)
+	if err := http.ListenAndServe(arguments.HttpBind, nil); err != nil {
 		log.Fatal(err)
 	}
 }

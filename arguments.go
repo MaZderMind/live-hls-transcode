@@ -6,14 +6,31 @@ type CliArguments struct {
 	RootDir    string `arg:"--root-dir,required"`
 	Extensions []string
 	TempDir    string `arg:"--temp-dir"`
+	HttpBind   string `arg:"--bind"`
 }
 
 func (CliArguments) Version() string {
 	return "live-hls-transcode 1.0.0"
 }
 
-func ParseCliArguments() CliArguments {
-	var args CliArguments
-	arg.MustParse(&args)
-	return args
+type CliArgumentsParser struct {
+	cliArguments CliArguments
+	parsed       bool
+}
+
+func NewCliArgumentsParser() CliArgumentsParser {
+	return CliArgumentsParser{}
+}
+
+func (c CliArgumentsParser) GetCliArguments() CliArguments {
+	if !c.parsed {
+
+		c.cliArguments.Extensions = make([]string, 0)
+		c.cliArguments.TempDir = "/tmp/live-hls-transcode"
+		c.cliArguments.HttpBind = ":8042"
+
+		arg.MustParse(&c.cliArguments)
+		c.parsed = true
+	}
+	return c.cliArguments;
 }
