@@ -11,9 +11,12 @@ Files:
             {{if .IsDir}}
 				<a href="{{.Name}}/" class="dir">{{.Name}}</a>
             {{else if .IsStream}}
-				<a href="{{.Name}}?stream&status" class="stream">{{.Name}}</a> <i>Stream</i>
+				<a href="{{.Name}}" class="streamable">{{.Name}}</a>
+				<i>{{.Size}} Bytes</i>
+				<a href="{{.Name}}?stream"><i>Stream</i></a>
             {{else}}
-				<a href="{{.Name}}" class="file">{{.Name}}</a> <i>{{.Size}} Bytes</i>
+				<a href="{{.Name}}" class="file">{{.Name}}</a>
+				<i>{{.Size}} Bytes</i>
             {{end}}
 		</li>
     {{end}}
