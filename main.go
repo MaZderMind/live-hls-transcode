@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -13,6 +12,7 @@ func main() {
 	requestClassifier := NewRequestClassifier(arguments.Extensions)
 	directoryIndex := NewDirectoryIndex(arguments.Extensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
+	streamHandler := NewStreamHandler(arguments.TempDir)
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		mappingResult := pathMapper.MapUrlPathToFilesystem(request.URL.Path)
@@ -27,11 +27,11 @@ func main() {
 		case FileRequest:
 			fileHandler.Handle(writer, request)
 		case StreamStatusRequest:
-			_, _ = fmt.Fprintf(writer, "Stream-Status")
+			streamHandler.HandleStatusRequest(writer, request, mappingResult)
 		case StreamPlaylistRequest:
-			_, _ = fmt.Fprintf(writer, "Stream-Playlist")
+			streamHandler.HandlePlaylistRequest(writer, request, mappingResult)
 		case StreamSegmentRequest:
-			_, _ = fmt.Fprintf(writer, "Stream-Segment")
+			streamHandler.HandleSegmentRequest(writer, request, mappingResult)
 		}
 
 	})
@@ -41,7 +41,7 @@ func main() {
 	})
 	http.Handle("/__static/", http.StripPrefix("/__static/", http.FileServer(http.Dir("static/"))))
 
-	fmt.Printf("Listening on %s\n", arguments.HttpBind)
+	log.Printf("Listening on %s\n", arguments.HttpBind)
 	if err := http.ListenAndServe(arguments.HttpBind, nil); err != nil {
 		log.Fatal(err)
 	}

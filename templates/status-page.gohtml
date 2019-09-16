@@ -1,0 +1,12 @@
+{{if .NoStream}}
+	There is no Stream yet.
+	<a href="?stream&start">Start Stream-Transcoding</a>
+{{else if .StreamInPreparation}}
+	Stream in Preparation…
+	<a href="?stream&stop">Cancel Stream-Transcoding</a>
+{{else if .StreamReady}}
+	Stream is Ready
+	<a href="?stream&playlist">Play</a>
+{{else if .StreamTranscodingFailed}}
+	Stream-Transcoding failed
+{{end}}

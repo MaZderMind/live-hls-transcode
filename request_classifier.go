@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/thoas/go-funk"
 	"net/http"
 )
@@ -27,9 +26,6 @@ func NewRequestClassifier(streamableExtensions []string) RequestClassifier {
 }
 
 func (requestClassifier RequestClassifier) ClassifyRequest(request *http.Request, mappingResult PathMappingResult) RequestType {
-	fmt.Printf("ClassifyRequest(request=%v, mappingResult=%v); streamableExtensions=%v", request, mappingResult,
-		requestClassifier.streamableExtensions)
-
 	if mappingResult.FileInfo.IsDir() {
 		return DirectoryIndexRequest
 	} else {

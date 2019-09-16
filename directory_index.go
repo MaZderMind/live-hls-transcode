@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/thoas/go-funk"
 	"html/template"
 	"io/ioutil"
@@ -45,7 +44,7 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 		return
 	}
 
-	writer.Header().Add("Content-Type", "text/html")
+	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 	if err = directoryIndex.template.Execute(writer, struct {
 		IsRoot bool
 		Files  []TemplateFileDto
@@ -53,7 +52,7 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 		path.Clean(request.URL.Path) == "/",
 		directoryIndex.buildTemplateFileDtos(files),
 	}); err != nil {
-		fmt.Printf("Template-Formatting failed: %s", err)
+		log.Printf("Template-Formatting failed: %s", err)
 	}
 }
 
