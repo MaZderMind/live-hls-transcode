@@ -13,4 +13,3 @@ func RelativeRedirect(writer http.ResponseWriter, request *http.Request, relativ
 	resolvedUrl := request.URL.ResolveReference(parsedUrl).String()
 	http.Redirect(writer, request, resolvedUrl, httpCode)
 }
-

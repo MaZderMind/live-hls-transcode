@@ -9,7 +9,7 @@ import (
 // Stored Information about a Stream
 type StreamInfo struct {
 	tempDir string
-	handle  TranscoderHandle
+	handle  *TranscoderHandle
 }
 
 type StreamStatusManager struct {
@@ -38,13 +38,16 @@ const (
 	StreamTranscodingFailed
 	StreamInPreparation
 	StreamReady
+	TranscodingFinished
 )
 
 func (manager StreamStatusManager) GetStreamStatus(calculatedPath string) StreamStatus {
 	info, hasInfo := manager.streamInfo[calculatedPath]
 
 	if hasInfo {
-		if info.handle.IsReady() {
+		if info.handle.IsFinished() {
+			return TranscodingFinished
+		} else if info.handle.IsReady() {
 			return StreamReady
 		} else if info.handle.IsRunning() {
 			return StreamInPreparation

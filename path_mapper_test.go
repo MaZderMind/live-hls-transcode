@@ -74,7 +74,7 @@ func TestPathMapper_mapUrlPathToFilesystem(t *testing.T) {
 			directoryMapper := PathMapper{
 				rootDir: tt.fields.rootDir,
 			}
-			got := directoryMapper.MapUrlPathToFilesystem(tt.args.urlPath);
+			got := directoryMapper.MapUrlPathToFilesystem(tt.args.urlPath)
 			if !reflect.DeepEqual(got.CalculatedPath, tt.calculatedPath) {
 				t.Errorf("MapUrlPathToFilesystem().CalculatedPath = %v, want %v", got, tt.calculatedPath)
 			}

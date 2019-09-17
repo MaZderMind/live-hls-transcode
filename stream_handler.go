@@ -28,7 +28,7 @@ func NewStreamHandler(tempDir string) StreamHandler {
 func (handler StreamHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	if request.URL.Query()["start"] != nil {
 		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath)
-		RelativeRedirect(writer, request, "?stream", http.StatusTemporaryRedirect)
+		RelativeRedirect(writer, request, "?stream&autostart", http.StatusTemporaryRedirect)
 		return
 	} else if request.URL.Query()["stop"] != nil {
 		handler.streamStatusManager.StopStream(pathMappingResult.CalculatedPath)
@@ -43,11 +43,13 @@ func (handler StreamHandler) HandleStatusRequest(writer http.ResponseWriter, req
 		StreamInPreparation     bool
 		StreamReady             bool
 		StreamTranscodingFailed bool
+		TranscodingFinished     bool
 	}{
 		streamStatus == NoStream,
 		streamStatus == StreamInPreparation,
 		streamStatus == StreamReady,
 		streamStatus == StreamTranscodingFailed,
+		streamStatus == TranscodingFinished,
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}

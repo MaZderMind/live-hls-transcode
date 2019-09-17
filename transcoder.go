@@ -8,8 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strconv"
 	"strings"
 )
+
+// 2 Minutes
+const minimalWindowMs = 2 * 60000000
 
 type Transcoder struct {
 }
@@ -21,18 +25,26 @@ func NewTranscoder() Transcoder {
 type TranscoderHandle struct {
 	sourceFile        string
 	destinationFolder string
+	cmd               *exec.Cmd
 	cancel            context.CancelFunc
 	stdOut            io.ReadCloser
 
-	isRunning  bool
-	isReady    bool
-	isFinished bool
+	isRunning           bool
+	isMinimalWindowDone bool
+	isFinished          bool
 }
 
-func newTranscoderHandle(sourceFile string, destinationFolder string, cancel context.CancelFunc, stdOut io.ReadCloser) TranscoderHandle {
+func newTranscoderHandle(
+	sourceFile string,
+	destinationFolder string,
+	cmd *exec.Cmd,
+	cancel context.CancelFunc,
+	stdOut io.ReadCloser,
+) TranscoderHandle {
 	return TranscoderHandle{
 		sourceFile,
 		destinationFolder,
+		cmd,
 		cancel,
 		stdOut,
 
@@ -40,10 +52,9 @@ func newTranscoderHandle(sourceFile string, destinationFolder string, cancel con
 		false,
 		false,
 	}
-
 }
 
-func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolder string) TranscoderHandle {
+func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolder string) *TranscoderHandle {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	cmd := exec.CommandContext(ctx,
@@ -81,17 +92,17 @@ func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolde
 		log.Fatal("Unable to open StdoutPipe", err)
 	}
 
-	handle := newTranscoderHandle(sourceFile, destinationFolder, cancel, readCloser)
+	handle := newTranscoderHandle(sourceFile, destinationFolder, cmd, cancel, readCloser)
 
 	err = cmd.Start()
 	if err != nil {
 		log.Print("Unable to start Transcoding-Process", err)
-		return handle
+		return &handle
 	}
 
 	handle.isRunning = true
 	go handle.readStdOut()
-	return handle
+	return &handle
 }
 
 func (handle TranscoderHandle) IsRunning() bool {
@@ -99,35 +110,91 @@ func (handle TranscoderHandle) IsRunning() bool {
 }
 
 func (handle TranscoderHandle) IsReady() bool {
-	return handle.isReady
+	return handle.isMinimalWindowDone || handle.isFinished
 }
 
 func (handle TranscoderHandle) IsFinished() bool {
 	return handle.isFinished
 }
 
-func (handle TranscoderHandle) Stop() {
+func (handle *TranscoderHandle) Stop() {
+	if ! handle.isRunning {
+		return
+	}
+
 	handle.cancel()
 	log.Printf("%s: Deleting Temp-Dir: %s", handle.sourceFile, handle.destinationFolder)
 	err := os.RemoveAll(handle.destinationFolder)
+
+	handle.isRunning = false
+
 	if err != nil {
 		log.Printf("%s: Unable to delete Temp-Dir: %s", handle.sourceFile, handle.destinationFolder)
 	}
 }
 
-func (handle TranscoderHandle) readStdOut() {
+func (handle *TranscoderHandle) disarm() {
+	handle.cmd = nil
+	handle.cancel = nil
+}
+
+func (handle *TranscoderHandle) readStdOut() {
 	reader := bufio.NewReader(handle.stdOut)
 
 	for ; ; {
 		line, err := reader.ReadString('\n')
-
-		if err != nil {
-			log.Printf("%s: Error Reading from Transcoder-StdOut, Stopping Process", handle.sourceFile)
+		if err == io.EOF {
+			handle.checkExitCode()
+			return
+		} else if err != nil {
+			log.Printf("%s: Error Reading from Transcoder-StdOut, Stopping Process: %s", handle.sourceFile, err)
 			handle.Stop()
-			handle.isRunning = false
+			handle.disarm()
 			return
 		}
 
-		log.Printf("%s: Read Line: >%s<", handle.sourceFile, strings.Trim(line, "\n"))
+		k, v := splitKeyValue(line)
+
+		// when the transcoder has processed minimalWindow Miliseconds, we take the Stream as "ready"
+		if k == "out_time_ms" {
+			ms, err := strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				log.Fatalf("Unable to Parse ffmpeg out_time_ms-Value %v as Int64: %v", v, err)
+			}
+			if ms > minimalWindowMs {
+				handle.isRunning = true
+				handle.isMinimalWindowDone = true
+			}
+		} else if k == "out_time" {
+			log.Printf("%s: Transcoding... %s", handle.sourceFile, v)
+		}
 	}
+}
+
+func splitKeyValue(line string) (string, string) {
+	pieces := strings.SplitN(strings.Trim(line, "\n"), "=", 2)
+	return pieces[0], pieces[1]
+}
+
+func (handle *TranscoderHandle) checkExitCode() {
+	err := handle.cmd.Wait()
+
+	if err != nil {
+		log.Printf("%s: Error while waiting for Child-Process: %v", handle.sourceFile, err)
+		handle.Stop()
+		handle.disarm()
+		return
+	}
+
+	if handle.cmd.ProcessState.ExitCode() != 0 {
+		log.Printf("%s: Child-Process failed with Exit-Code: %v", handle.sourceFile, handle.cmd.ProcessState.ExitCode())
+		handle.Stop()
+		handle.disarm()
+		return
+	}
+
+	log.Printf("%s: Successfully finished Transcoding", handle.sourceFile)
+	handle.isRunning = false
+	handle.isFinished = true
+	handle.disarm()
 }

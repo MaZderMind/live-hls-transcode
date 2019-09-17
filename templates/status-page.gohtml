@@ -5,7 +5,11 @@
 	Stream in Preparation…
 	<a href="?stream&stop">Cancel Stream-Transcoding</a>
 {{else if .StreamReady}}
-	Stream is Ready
+	Stream is Ready (still transcoding)
+	<a href="?stream&playlist">Play</a>
+	<a href="?stream&stop">Cancel Stream-Transcoding</a>
+{{else if .TranscodingFinished}}
+	Transcoding is finished
 	<a href="?stream&playlist">Play</a>
 {{else if .StreamTranscodingFailed}}
 	Stream-Transcoding failed

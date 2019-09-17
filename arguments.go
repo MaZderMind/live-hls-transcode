@@ -26,7 +26,7 @@ func (c CliArgumentsParser) GetCliArguments() CliArguments {
 	if !c.parsed {
 
 		c.cliArguments.Extensions = []string{
-			"avi", "ts", "m2ts", "mp2", "mpeg", "mpg",
+			"avi", "ts", "m2ts", "mp2", "mpeg", "mpg", "wmv",
 		}
 		c.cliArguments.TempDir = "/tmp/live-hls-transcode"
 		c.cliArguments.HttpBind = ":8042"
