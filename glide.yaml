@@ -8,3 +8,6 @@ import:
   version: ^0.4.0
 - package: github.com/grafov/m3u8
   version: ^0.11.1
+- package: github.com/gosimple/slug
+  version: ^1.7.0
+- package: github.com/rainycape/unidecode

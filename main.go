@@ -18,7 +18,7 @@ func main() {
 	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		log.Printf("%s %s", request.Method, request.URL.String())
+		log.Printf("%s %s", request.Method, request.URL)
 
 		mappingResult := pathMapper.MapUrlPathToFilesystem(request.URL.Path)
 		if mappingResult.StatError != nil {

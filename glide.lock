@@ -1,5 +1,5 @@
-hash: d3e49b7ed2141eac349b0d827b27845fa5f72cf348361995d1e87710fd80277c
-updated: 2019-09-17T23:08:26.116289096+02:00
+hash: 8702c4a56ac3de9b249d3d597d30a996f7486e901b80c18b8c80df2703ebfc37
+updated: 2019-09-18T13:41:15.818324981+02:00
 imports:
 - name: github.com/alexflint/go-arg
   version: 8baf7040d76473dd1d78c17b490d9d8cf6b1c584
@@ -7,8 +7,12 @@ imports:
   version: 6638fbbc28f9ad0136ef5fd84a15c995e08e161f
 - name: github.com/cosmtrek/air
   version: deea39802724a47e8dff13213712eb43ad74ec43
+- name: github.com/gosimple/slug
+  version: 984b6d1a0ae5d1ecf6d718f4e990883d281ba3b8
 - name: github.com/grafov/m3u8
   version: 036100c52a87e26c62be56df85450e9c703201a6
+- name: github.com/rainycape/unidecode
+  version: cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c
 - name: github.com/thoas/go-funk
   version: c43409e2d5def27be9b081e316441108def35c8d
 testImports: []

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gosimple/slug"
 	"io/ioutil"
 	"log"
 	"os"
@@ -76,10 +77,7 @@ func (manager StreamStatusManager) StartStream(calculatedPath string) {
 		return
 	}
 
-	tempDir, err := ioutil.TempDir(manager.tempDir, "hls")
-	if err != nil {
-		log.Fatal(err)
-	}
+	tempDir := manager.createTempDir(calculatedPath)
 
 	log.Printf("%s: Starting Stream-Transcoder into %s", calculatedPath, tempDir)
 	handle := manager.transcoder.StartTranscoder(calculatedPath, tempDir)
@@ -88,6 +86,16 @@ func (manager StreamStatusManager) StartStream(calculatedPath string) {
 		tempDir,
 		handle,
 	}
+}
+
+func (manager StreamStatusManager) createTempDir(calculatedPath string) string {
+	tempDir, err := ioutil.TempDir(manager.tempDir, slug.Make(calculatedPath))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tempDir
 }
 
 func (manager StreamStatusManager) StopStream(calculatedPath string) {
