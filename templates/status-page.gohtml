@@ -18,10 +18,19 @@
 	Stream-Transcoding failed
 {{end}}
 
-{{if not .NoStream}}
+{{if .ShowStatus}}
 	<h2>Status</h2>
 	Last Accessed {{.LastAccess.Format "02. Jan 2006 15:04"}}<br>
 	Valid until {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
+{{end}}
+
+{{if .StreamInPreparation}}
+	<h2>Progress</h2>
+	<ul>
+		<li>ProcessedDuration: {{.ProcessedDuration}}</li>
+		<li>TotalDuration: {{.TotalDuration}}</li>
+		<li>ProcessedPercent {{printf "%.2f" .ProcessedPercent}}%</li>
+	</ul>
 {{end}}
 
 {{if .OtherStreamInfos}}

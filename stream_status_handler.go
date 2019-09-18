@@ -46,24 +46,40 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 	otherStreamInfos := handler.streamStatusManager.OtherStreamInfos(pathMappingResult.CalculatedPath)
 
 	if err := handler.statusPageTemplateFile.Execute(writer, struct {
-		UrlPath                 string
-		LastAccess              time.Time
-		ExpirationDate          time.Time
+		UrlPath string
+
+		LastAccess     time.Time
+		ExpirationDate time.Time
+
+		ProcessedDuration time.Duration
+		TotalDuration     time.Duration
+		ProcessedPercent  float64
+
 		NoStream                bool
 		StreamInPreparation     bool
 		StreamReady             bool
 		StreamTranscodingFailed bool
 		TranscodingFinished     bool
-		OtherStreamInfos        []StreamInfo
+		ShowStatus              bool
+
+		OtherStreamInfos []StreamInfo
 	}{
 		pathMappingResult.UrlPath,
+
 		streamInfo.LastAccess,
 		streamInfo.LastAccess.Add(time.Minute * time.Duration(handler.lifetimeMinutes)),
+
+		streamInfo.ProcessedDuration(),
+		streamInfo.TotalDuration(),
+		streamInfo.ProcessedPercent(),
+
 		streamStatus == NoStream,
 		streamStatus == StreamInPreparation,
 		streamStatus == StreamReady,
 		streamStatus == StreamTranscodingFailed,
 		streamStatus == TranscodingFinished,
+
+		streamStatus != NoStream && streamStatus != StreamTranscodingFailed,
 		otherStreamInfos,
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)

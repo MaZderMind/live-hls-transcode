@@ -53,15 +53,39 @@ func (info StreamInfo) DominantStatusCode() StreamStatus {
 }
 
 func (info StreamInfo) IsReady() bool {
-	return info.handle.IsReady()
+	return info.handle != nil && info.handle.IsReady()
 }
 
 func (info StreamInfo) IsRunning() bool {
-	return info.handle.IsRunning()
+	return info.handle != nil && info.handle.IsRunning()
 }
 
 func (info StreamInfo) IsFinished() bool {
-	return info.handle.IsFinished()
+	return info.handle != nil && info.handle.IsFinished()
+}
+
+func (info StreamInfo) TotalDuration() time.Duration {
+	if info.handle != nil {
+		return info.handle.TotalDuration()
+	}
+
+	return time.Duration(0)
+}
+
+func (info StreamInfo) ProcessedDuration() time.Duration {
+	if info.handle != nil {
+		return info.handle.ProcessedDuration()
+	}
+
+	return time.Duration(0)
+}
+
+func (info StreamInfo) ProcessedPercent() float64 {
+	if info.handle != nil {
+		return info.handle.ProcessedPercent()
+	}
+
+	return 0.
 }
 
 type StreamStatus int
