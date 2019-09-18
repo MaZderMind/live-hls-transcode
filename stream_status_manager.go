@@ -8,6 +8,25 @@ import (
 	"time"
 )
 
+type StreamStatusManager struct {
+	tempDir    string
+	streamInfo map[string]StreamInfo
+	transcoder Transcoder
+}
+
+func NewStreamStatusManager(tempDir string) StreamStatusManager {
+	err := os.MkdirAll(tempDir, 0770)
+	if err != nil {
+		log.Fatalf("Cannot create Temp-Dir %s", tempDir)
+	}
+
+	return StreamStatusManager{
+		tempDir,
+		make(map[string]StreamInfo),
+		NewTranscoder(),
+	}
+}
+
 // Stored Information about a Stream
 type StreamInfo struct {
 	CalculatedPath string
@@ -43,25 +62,6 @@ func (info StreamInfo) IsRunning() bool {
 
 func (info StreamInfo) IsFinished() bool {
 	return info.handle.IsFinished()
-}
-
-type StreamStatusManager struct {
-	tempDir    string
-	streamInfo map[string]StreamInfo
-	transcoder Transcoder
-}
-
-func NewStreamStatusManager(tempDir string) StreamStatusManager {
-	err := os.MkdirAll(tempDir, 0770)
-	if err != nil {
-		log.Fatalf("Cannot create Temp-Dir %s", tempDir)
-	}
-
-	return StreamStatusManager{
-		tempDir,
-		make(map[string]StreamInfo),
-		NewTranscoder(),
-	}
 }
 
 type StreamStatus int
@@ -144,4 +144,12 @@ func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
 		info.LastAccess = time.Now()
 		manager.streamInfo[calculatedPath] = info
 	}
+}
+
+func (manager StreamStatusManager) StreamInfos() map[string]StreamInfo {
+	return manager.streamInfo
+}
+
+func (manager StreamStatusManager) DeleteStreamInfo(calculatedPath string) {
+	delete(manager.streamInfo, calculatedPath)
 }
