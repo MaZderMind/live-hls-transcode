@@ -22,9 +22,10 @@ func NewStreamHandler(streamStatusManager *StreamStatusManager, rootDir string) 
 }
 
 func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
+	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.assureStreamIsReady(streamInfo, writer) {
+	if ! handler.ensureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
@@ -48,7 +49,7 @@ func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, r
 
 	// Set Start-Time
 	playlist := genericPlaylist.(*m3u8.MediaPlaylist)
-	playlist.StartTime = 0.01
+	playlist.StartTime = 0.01 // must be >0.0 to make the m3u8 writer print the statement
 
 	// Modify Segment-Names
 	for index := range playlist.Segments {
@@ -70,26 +71,11 @@ func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, r
 	}
 }
 
-func (handler StreamHandler) assureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
-	if ! streamInfo.Handle.IsReady() {
-		writer.Header().Add("Content-Type", "text/plain")
-
-		_, err := fmt.Fprint(writer, "Stream not Ready")
-		if err != nil {
-			log.Printf("Error writing to Socket: %s", err)
-			return false
-		}
-
-		return false
-	}
-
-	return true
-}
-
 func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
+	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.assureStreamIsReady(streamInfo, writer) {
+	if ! handler.ensureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
@@ -102,4 +88,20 @@ func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, re
 	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", segmentFilename))
 	fileServer := http.FileServer(http.Dir(streamInfo.TempDir))
 	fileServer.ServeHTTP(writer, segmentRequest)
+}
+
+func (handler StreamHandler) ensureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
+	if ! streamInfo.IsReady() {
+		writer.Header().Add("Content-Type", "text/plain")
+
+		_, err := fmt.Fprint(writer, "Stream not Ready")
+		if err != nil {
+			log.Printf("Error writing to Socket: %s", err)
+			return false
+		}
+
+		return false
+	}
+
+	return true
 }

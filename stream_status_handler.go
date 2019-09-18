@@ -4,14 +4,16 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 type StreamStatusHandler struct {
 	statusPageTemplateFile *template.Template
 	streamStatusManager    *StreamStatusManager
+	lifetimeMinutes        int32
 }
 
-func NewStreamStatusHandler(streamStatusManager *StreamStatusManager) StreamStatusHandler {
+func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMinutes int32) StreamStatusHandler {
 	statusPageTemplateFile, err := template.New("status-page.gohtml").ParseFiles("templates/status-page.gohtml")
 
 	if err != nil {
@@ -21,6 +23,7 @@ func NewStreamStatusHandler(streamStatusManager *StreamStatusManager) StreamStat
 	return StreamStatusHandler{
 		statusPageTemplateFile,
 		streamStatusManager,
+		lifetimeMinutes,
 	}
 }
 
@@ -37,12 +40,15 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
+
 	streamStatus := streamInfo.DominantStatusCode()
 
 	otherStreamInfos := handler.streamStatusManager.OtherStreamInfos(pathMappingResult.CalculatedPath)
 
 	if err := handler.statusPageTemplateFile.Execute(writer, struct {
 		UrlPath                 string
+		LastAccess              time.Time
+		ExpirationDate          time.Time
 		NoStream                bool
 		StreamInPreparation     bool
 		StreamReady             bool
@@ -51,6 +57,8 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 		OtherStreamInfos        []StreamInfo
 	}{
 		pathMappingResult.UrlPath,
+		streamInfo.LastAccess,
+		streamInfo.LastAccess.Add(time.Minute * time.Duration(handler.lifetimeMinutes)),
 		streamStatus == NoStream,
 		streamStatus == StreamInPreparation,
 		streamStatus == StreamReady,

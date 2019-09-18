@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 )
 
 // Stored Information about a Stream
@@ -12,16 +13,17 @@ type StreamInfo struct {
 	CalculatedPath string
 	UrlPath        string
 	TempDir        string
-	Handle         *TranscoderHandle
+	handle         *TranscoderHandle
+	LastAccess     time.Time
 }
 
 func (info StreamInfo) DominantStatusCode() StreamStatus {
-	if info.Handle != nil {
-		if info.Handle.IsFinished() {
+	if info.handle != nil {
+		if info.handle.IsFinished() {
 			return TranscodingFinished
-		} else if info.Handle.IsReady() {
+		} else if info.handle.IsReady() {
 			return StreamReady
-		} else if info.Handle.IsRunning() {
+		} else if info.handle.IsRunning() {
 			return StreamInPreparation
 		} else {
 			return StreamTranscodingFailed
@@ -29,6 +31,18 @@ func (info StreamInfo) DominantStatusCode() StreamStatus {
 	} else {
 		return NoStream
 	}
+}
+
+func (info StreamInfo) IsReady() bool {
+	return info.handle.IsReady()
+}
+
+func (info StreamInfo) IsRunning() bool {
+	return info.handle.IsRunning()
+}
+
+func (info StreamInfo) IsFinished() bool {
+	return info.handle.IsFinished()
 }
 
 type StreamStatusManager struct {
@@ -81,6 +95,7 @@ func (manager StreamStatusManager) StartStream(calculatedPath string, urlPath st
 		urlPath,
 		tempDir,
 		handle,
+		time.Now(),
 	}
 }
 
@@ -97,22 +112,22 @@ func (manager StreamStatusManager) createTempDir(calculatedPath string) string {
 func (manager StreamStatusManager) StopStream(calculatedPath string) {
 	info, hasInfo := manager.streamInfo[calculatedPath]
 	if hasInfo {
-		if info.Handle.IsFinished() {
+		if info.handle.IsFinished() {
 			log.Printf("%s: Stream-Transcoder already finished, ignoring Stop-Command", calculatedPath)
 		} else {
 			log.Printf("%s: Stopping unfinished Stream-Transcoder", calculatedPath)
-			info.Handle.Stop()
+			info.handle.Stop()
 
 			delete(manager.streamInfo, calculatedPath)
 		}
 	}
 }
 
-func (manager StreamStatusManager) OtherStreamInfos(thisCalculatedPath string) []StreamInfo {
+func (manager StreamStatusManager) OtherStreamInfos(excludingThisCalculatedPath string) []StreamInfo {
 	otherStreamInfos := make([]StreamInfo, 0)
 
 	for _, streamInfo := range manager.streamInfo {
-		if streamInfo.CalculatedPath == thisCalculatedPath {
+		if streamInfo.CalculatedPath == excludingThisCalculatedPath {
 			continue
 		}
 
@@ -120,4 +135,13 @@ func (manager StreamStatusManager) OtherStreamInfos(thisCalculatedPath string) [
 	}
 
 	return otherStreamInfos
+}
+
+func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
+	info, hasInfo := manager.streamInfo[calculatedPath]
+
+	if hasInfo {
+		info.LastAccess = time.Now()
+		manager.streamInfo[calculatedPath] = info
+	}
 }
