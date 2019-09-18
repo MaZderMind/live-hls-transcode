@@ -1,11 +1,13 @@
-== Build ==
+# live-hls-transcode
+## Build & Run
 ```
-glide install
-go build
+make dependencies
+make
+./live-hls-transcode --root-dir /video/
 ```
 
-== Run Dev-Server (with hot-reload) ==
+## Run Dev-Server (with hot-reload)
 ```
-glide install
-./vendor/github.com/cosmtrek/air/bin/linux/air
+make dependencies
+make run
 ```
