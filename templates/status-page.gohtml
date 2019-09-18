@@ -18,13 +18,19 @@
 	Stream-Transcoding failed
 {{end}}
 
+{{if not .NoStream}}
+	<h2>Status</h2>
+	Last Accessed {{.LastAccess.Format "02. Jan 2006 15:04"}}<br>
+	Valid until {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
+{{end}}
+
 {{if .OtherStreamInfos}}
 	<h2>Other Streams</h2>
 	<ul>
         {{range .OtherStreamInfos}}
 			<li>
 				<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
-                {{if .Handle.IsRunning}}
+                {{if .IsRunning}}
 					(<a href="{{.UrlPath}}?stream&stop">Cancel</a>)
                 {{end}}
 			</li>

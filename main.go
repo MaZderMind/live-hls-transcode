@@ -14,8 +14,11 @@ func main() {
 	fileHandler := NewFileHandler(arguments.RootDir)
 
 	statusManager := NewStreamStatusManager(arguments.TempDir)
-	streamStatusHandler := NewStreamStatusHandler(&statusManager)
+	streamStatusHandler := NewStreamStatusHandler(&statusManager, arguments.LifetimeMinutes)
 	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
+
+	cleanup := NewCleanup(&statusManager, arguments.LifetimeMinutes)
+	cleanup.Start()
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("%s %s", request.Method, request.URL)
