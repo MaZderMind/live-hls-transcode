@@ -1,64 +1,104 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"html/template"
+	"github.com/grafov/m3u8"
 	"log"
 	"net/http"
+	"net/url"
+	"os"
+	"path"
 )
 
 type StreamHandler struct {
-	statusPageTemplateFile *template.Template
-	streamStatusManager    StreamStatusManager
+	streamStatusManager *StreamStatusManager
 }
 
-func NewStreamHandler(tempDir string) StreamHandler {
-	statusPageTemplateFile, err := template.New("status-page.gohtml").ParseFiles("templates/status-page.gohtml")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func NewStreamHandler(streamStatusManager *StreamStatusManager, rootDir string) StreamHandler {
 	return StreamHandler{
-		statusPageTemplateFile,
-		NewStreamStatusManager(tempDir),
-	}
-}
-
-func (handler StreamHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
-	if request.URL.Query()["start"] != nil {
-		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath)
-		RelativeRedirect(writer, request, "?stream&autostart", http.StatusTemporaryRedirect)
-		return
-	} else if request.URL.Query()["stop"] != nil {
-		handler.streamStatusManager.StopStream(pathMappingResult.CalculatedPath)
-		RelativeRedirect(writer, request, "?stream", http.StatusTemporaryRedirect)
-		return
-	}
-
-	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
-	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
-	if err := handler.statusPageTemplateFile.Execute(writer, struct {
-		NoStream                bool
-		StreamInPreparation     bool
-		StreamReady             bool
-		StreamTranscodingFailed bool
-		TranscodingFinished     bool
-	}{
-		streamStatus == NoStream,
-		streamStatus == StreamInPreparation,
-		streamStatus == StreamReady,
-		streamStatus == StreamTranscodingFailed,
-		streamStatus == TranscodingFinished,
-	}); err != nil {
-		log.Printf("Template-Formatting failed: %s", err)
+		streamStatusManager,
 	}
 }
 
 func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
-	_, _ = fmt.Fprintf(writer, "Stream-Playlist")
+	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
+
+	if ! handler.assureStreamIsReady(streamStatus, writer) {
+		return
+	}
+
+	tempdir := handler.streamStatusManager.GetStreamTempdir(pathMappingResult.CalculatedPath)
+	filepath := path.Join(tempdir, "index.m3u8")
+	file, err := os.Open(filepath)
+	if err != nil {
+		log.Printf("Error loading Playlist-File %s: %s", filepath, err)
+		return
+	}
+
+	genericPlaylist, listType, err := m3u8.DecodeFrom(bufio.NewReader(file), true)
+	if err != nil {
+		log.Printf("Error decoding Playlist-File %s: %s", filepath, err)
+		return
+	}
+
+	if listType != m3u8.MEDIA {
+		log.Printf("Playlist-File %s is not a MEDIA-Playlist", filepath)
+		return
+	}
+
+	// Set Start-Time
+	playlist := genericPlaylist.(*m3u8.MediaPlaylist)
+	playlist.StartTime = 0.01
+
+	// Modify Segment-Names
+	for index := range playlist.Segments {
+		if playlist.Segments[index] == nil {
+			break
+		}
+
+		playlist.Segments[index].URI = request.URL.Path + "?stream&segment=" + url.QueryEscape(playlist.Segments[index].URI)
+	}
+
+	writer.Header().Add("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8")
+	_, err = fmt.Fprint(writer, playlist.String())
+	if err != nil {
+		log.Printf("Error writing to Socket: %s", err)
+		return
+	}
+}
+
+func (handler StreamHandler) assureStreamIsReady(streamStatus StreamStatus, writer http.ResponseWriter) bool {
+	if streamStatus != StreamReady && streamStatus != TranscodingFinished {
+		writer.Header().Add("Content-Type", "text/plain")
+
+		_, err := fmt.Fprint(writer, "Stream not Ready")
+		if err != nil {
+			log.Printf("Error writing to Socket: %s", err)
+			return false
+		}
+
+		return false
+	}
+
+	return true
 }
 
 func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
-	_, _ = fmt.Fprintf(writer, "Stream-Segment")
+	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
+
+	if ! handler.assureStreamIsReady(streamStatus, writer) {
+		return
+	}
+
+	tempdir := handler.streamStatusManager.GetStreamTempdir(pathMappingResult.CalculatedPath)
+	segmentFilename := request.URL.Query().Get("segment")
+
+	segmentRequest := request
+	segmentRequest.URL.Path = segmentFilename
+
+	writer.Header().Add("Content-Type", "video/MP2T")
+	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", segmentFilename))
+	fileServer := http.FileServer(http.Dir(tempdir))
+	fileServer.ServeHTTP(writer, segmentRequest)
 }

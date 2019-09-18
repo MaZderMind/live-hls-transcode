@@ -82,7 +82,7 @@ func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolde
 		"-flags", "+cgop",
 		"-g", "60",
 		"-hls_playlist_type", "event",
-		"-hls_time", "5",
+		"-hls_time", "10",
 		path.Join(destinationFolder, "index.m3u8"),
 	)
 

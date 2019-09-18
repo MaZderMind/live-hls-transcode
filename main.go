@@ -12,9 +12,14 @@ func main() {
 	requestClassifier := NewRequestClassifier(arguments.Extensions)
 	directoryIndex := NewDirectoryIndex(arguments.Extensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
-	streamHandler := NewStreamHandler(arguments.TempDir)
+
+	statusManager := NewStreamStatusManager(arguments.TempDir)
+	streamStatusHandler := NewStreamStatusHandler(&statusManager)
+	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		log.Printf("%s %s", request.Method, request.URL.String())
+
 		mappingResult := pathMapper.MapUrlPathToFilesystem(request.URL.Path)
 		if mappingResult.StatError != nil {
 			mappingResult.HandleError(writer)
@@ -27,7 +32,7 @@ func main() {
 		case FileRequest:
 			fileHandler.Handle(writer, request)
 		case StreamStatusRequest:
-			streamHandler.HandleStatusRequest(writer, request, mappingResult)
+			streamStatusHandler.HandleStatusRequest(writer, request, mappingResult)
 		case StreamPlaylistRequest:
 			streamHandler.HandlePlaylistRequest(writer, request, mappingResult)
 		case StreamSegmentRequest:

@@ -59,6 +59,16 @@ func (manager StreamStatusManager) GetStreamStatus(calculatedPath string) Stream
 	}
 }
 
+func (manager StreamStatusManager) GetStreamTempdir(calculatedPath string) string {
+	info, hasInfo := manager.streamInfo[calculatedPath]
+
+	if hasInfo {
+		return info.tempDir
+	} else {
+		return ""
+	}
+}
+
 func (manager StreamStatusManager) StartStream(calculatedPath string) {
 	_, hasInfo := manager.streamInfo[calculatedPath]
 	if hasInfo {
