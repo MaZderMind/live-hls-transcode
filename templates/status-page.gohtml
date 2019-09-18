@@ -1,3 +1,6 @@
+<h1>{{.UrlPath}}</h1>
+<a href="..">up</a><br>
+
 {{if .NoStream}}
 	There is no Stream yet.
 	<a href="?stream&start">Start Stream-Transcoding</a>
@@ -13,4 +16,18 @@
 	<a href="?stream&playlist">Play</a>
 {{else if .StreamTranscodingFailed}}
 	Stream-Transcoding failed
+{{end}}
+
+{{if .OtherStreamInfos}}
+	<h2>Other Streams</h2>
+	<ul>
+        {{range .OtherStreamInfos}}
+			<li>
+				<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
+                {{if .Handle.IsRunning}}
+					(<a href="{{.UrlPath}}?stream&stop">Cancel</a>)
+                {{end}}
+			</li>
+        {{end}}
+	</ul>
 {{end}}

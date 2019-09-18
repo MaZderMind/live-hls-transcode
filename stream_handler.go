@@ -22,14 +22,13 @@ func NewStreamHandler(streamStatusManager *StreamStatusManager, rootDir string) 
 }
 
 func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
-	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
+	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.assureStreamIsReady(streamStatus, writer) {
+	if ! handler.assureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
-	tempdir := handler.streamStatusManager.GetStreamTempdir(pathMappingResult.CalculatedPath)
-	filepath := path.Join(tempdir, "index.m3u8")
+	filepath := path.Join(streamInfo.TempDir, "index.m3u8")
 	file, err := os.Open(filepath)
 	if err != nil {
 		log.Printf("Error loading Playlist-File %s: %s", filepath, err)
@@ -57,10 +56,13 @@ func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, r
 			break
 		}
 
-		playlist.Segments[index].URI = request.URL.Path + "?stream&segment=" + url.QueryEscape(playlist.Segments[index].URI)
+		playlist.Segments[index].URI = request.URL.EscapedPath() + "?stream&segment=" + url.QueryEscape(playlist.Segments[index].URI)
 	}
 
+	filename := path.Base(pathMappingResult.CalculatedPath) + ".m3u8"
 	writer.Header().Add("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8")
+	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+
 	_, err = fmt.Fprint(writer, playlist.String())
 	if err != nil {
 		log.Printf("Error writing to Socket: %s", err)
@@ -68,8 +70,8 @@ func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, r
 	}
 }
 
-func (handler StreamHandler) assureStreamIsReady(streamStatus StreamStatus, writer http.ResponseWriter) bool {
-	if streamStatus != StreamReady && streamStatus != TranscodingFinished {
+func (handler StreamHandler) assureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
+	if ! streamInfo.Handle.IsReady() {
 		writer.Header().Add("Content-Type", "text/plain")
 
 		_, err := fmt.Fprint(writer, "Stream not Ready")
@@ -85,13 +87,12 @@ func (handler StreamHandler) assureStreamIsReady(streamStatus StreamStatus, writ
 }
 
 func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
-	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
+	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.assureStreamIsReady(streamStatus, writer) {
+	if ! handler.assureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
-	tempdir := handler.streamStatusManager.GetStreamTempdir(pathMappingResult.CalculatedPath)
 	segmentFilename := request.URL.Query().Get("segment")
 
 	segmentRequest := request
@@ -99,6 +100,6 @@ func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, re
 
 	writer.Header().Add("Content-Type", "video/MP2T")
 	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", segmentFilename))
-	fileServer := http.FileServer(http.Dir(tempdir))
+	fileServer := http.FileServer(http.Dir(streamInfo.TempDir))
 	fileServer.ServeHTTP(writer, segmentRequest)
 }

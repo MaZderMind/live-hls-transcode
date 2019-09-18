@@ -41,9 +41,6 @@ func main() {
 
 	})
 
-	http.HandleFunc("/__status", func(writer http.ResponseWriter, request *http.Request) {
-
-	})
 	http.Handle("/__static/", http.StripPrefix("/__static/", http.FileServer(http.Dir("static/"))))
 
 	log.Printf("Listening on %s\n", arguments.HttpBind)

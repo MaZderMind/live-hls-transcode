@@ -14,6 +14,7 @@ type PathMapper struct {
 
 type PathMappingResult struct {
 	CalculatedPath string
+	UrlPath        string
 	FileExtension  string
 	FileInfo       os.FileInfo
 	StatError      error
@@ -44,6 +45,7 @@ func (pathMapper PathMapper) MapUrlPathToFilesystem(urlPath string) PathMappingR
 
 	return PathMappingResult{
 		calculatedPath,
+		urlPath,
 		strings.ToLower(strings.TrimLeft(filepath.Ext(calculatedPath), ".")),
 		fileInfo,
 		statError,

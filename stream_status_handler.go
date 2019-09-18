@@ -26,7 +26,7 @@ func NewStreamStatusHandler(streamStatusManager *StreamStatusManager) StreamStat
 
 func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	if request.URL.Query()["start"] != nil {
-		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath)
+		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath, pathMappingResult.UrlPath)
 		RelativeRedirect(writer, request, "?stream&autostart", http.StatusTemporaryRedirect)
 		return
 	} else if request.URL.Query()["stop"] != nil {
@@ -36,19 +36,27 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 	}
 
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
-	streamStatus := handler.streamStatusManager.GetStreamStatus(pathMappingResult.CalculatedPath)
+	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
+	streamStatus := streamInfo.DominantStatusCode()
+
+	otherStreamInfos := handler.streamStatusManager.OtherStreamInfos(pathMappingResult.CalculatedPath)
+
 	if err := handler.statusPageTemplateFile.Execute(writer, struct {
+		UrlPath                 string
 		NoStream                bool
 		StreamInPreparation     bool
 		StreamReady             bool
 		StreamTranscodingFailed bool
 		TranscodingFinished     bool
+		OtherStreamInfos        []StreamInfo
 	}{
+		pathMappingResult.UrlPath,
 		streamStatus == NoStream,
 		streamStatus == StreamInPreparation,
 		streamStatus == StreamReady,
 		streamStatus == StreamTranscodingFailed,
 		streamStatus == TranscodingFinished,
+		otherStreamInfos,
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}
