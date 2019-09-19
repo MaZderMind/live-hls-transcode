@@ -3,3 +3,6 @@
 /tmp
 /vendor/
 /live-hls-transcode
+/frontend/node_modules/
+/main-packr.go
+/packrd/

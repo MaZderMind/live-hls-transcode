@@ -1,18 +1,59 @@
-hash: 8702c4a56ac3de9b249d3d597d30a996f7486e901b80c18b8c80df2703ebfc37
-updated: 2019-09-18T13:41:15.818324981+02:00
+hash: 369ea437453c49cc074647e71baa6dd1ed0c3ec263e60fd0fa9d03e9a1042589
+updated: 2019-09-19T17:41:31.251320648+02:00
 imports:
 - name: github.com/alexflint/go-arg
   version: 8baf7040d76473dd1d78c17b490d9d8cf6b1c584
 - name: github.com/alexflint/go-scalar
   version: 6638fbbc28f9ad0136ef5fd84a15c995e08e161f
-- name: github.com/cosmtrek/air
-  version: deea39802724a47e8dff13213712eb43ad74ec43
+- name: github.com/gobuffalo/envy
+  version: 909ea676d4c90832fefbf55a5a4fb04d8bef8931
+- name: github.com/gobuffalo/logger
+  version: 7c291b53e05b81d77bd43109b4a3c6f84e45c8e1
+- name: github.com/gobuffalo/packd
+  version: 54ea459691466cfb630ccc276723fe3963f3e9d5
+  subpackages:
+  - internal/takeon/github.com/markbates/errx
+- name: github.com/gobuffalo/packr
+  version: b6d537d853119bfd3a31fe49edf53418ce3a00e9
+  subpackages:
+  - v2
+  - v2/file
+  - v2/file/resolver
+  - v2/file/resolver/encoding/hex
+  - v2/internal/takeon/github.com/markbates/errx
+  - v2/internal/takeon/github.com/markbates/oncer
+  - v2/internal/takeon/github.com/markbates/safe
+  - v2/jam/parser
+  - v2/plog
 - name: github.com/gosimple/slug
   version: 984b6d1a0ae5d1ecf6d718f4e990883d281ba3b8
 - name: github.com/grafov/m3u8
   version: 036100c52a87e26c62be56df85450e9c703201a6
+- name: github.com/joho/godotenv
+  version: 5c0e6c6ab1a0a9ef0a8822cba3a05d62f7dad941
+- name: github.com/karrick/godirwalk
+  version: 73c17a9b9528eb3ce857b782a2816c0cda581e62
+- name: github.com/konsorten/go-windows-terminal-sequences
+  version: f55edac94c9bbba5d6182a4be46d86a2c9b5b50e
 - name: github.com/rainycape/unidecode
   version: cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c
+- name: github.com/rogpeppe/go-internal
+  version: 4bb227c59b1edd467deba87d2149d80915c0bed7
+  subpackages:
+  - modfile
+  - module
+  - semver
+- name: github.com/sirupsen/logrus
+  version: de736cf91b921d56253b4010270681d33fdf7cb5
 - name: github.com/thoas/go-funk
   version: c43409e2d5def27be9b081e316441108def35c8d
+- name: golang.org/x/crypto
+  version: 227b76d455e791cb042b03e633e2f7fbcfdf74a5
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/sys
+  version: 0c1ff786ef13daa914a3351c5e6b0321aed5960e
+  subpackages:
+  - unix
+  - windows
 testImports: []
