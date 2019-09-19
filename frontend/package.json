@@ -1,11 +1,11 @@
 {
-  "name": "live-hls-transcode-frontend",
-  "version": "1.0.0",
-  "description": "Frontend-Packages of live-hls-transcode",
-  "author": "MaZderMind",
-  "license": "BSD-2-Clause",
-  "dependencies": {
-    "jquery": "^3.4.1",
-    "scss-compile": "^0.1.7"
-  }
+	"name": "live-hls-transcode-frontend",
+	"version": "1.0.0",
+	"description": "Frontend-Packages of live-hls-transcode",
+	"author": "MaZderMind",
+	"license": "BSD-2-Clause",
+	"dependencies": {
+		"bootstrap": "^4.3.1",
+		"jquery": "^3.4.1"
+	}
 }
