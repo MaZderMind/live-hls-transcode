@@ -16,7 +16,7 @@ type Cleanup struct {
 
 func NewCleanup(statusManager *StreamStatusManager, lifetimeMinutes int32) Cleanup {
 	return Cleanup{
-		time.NewTicker(time.Minute),
+		time.NewTicker(time.Hour),
 		make(chan bool),
 		statusManager,
 		lifetimeMinutes,

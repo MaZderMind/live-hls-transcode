@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gobuffalo/packr/v2"
 	"log"
 	"net/http"
 )
@@ -44,7 +45,14 @@ func main() {
 
 	})
 
-	http.Handle("/__static/", http.StripPrefix("/__static/", http.FileServer(http.Dir("static/"))))
+	bootstrap := packr.New("bootstrap", "./frontend/node_modules/bootstrap/dist/css/")
+	http.Handle("/___frontend/bootstrap/", http.StripPrefix("/___frontend/bootstrap/", http.FileServer(bootstrap)))
+
+	jquery := packr.New("jquery", "frontend/node_modules/jquery/dist")
+	http.Handle("/___frontend/jquery/", http.StripPrefix("/___frontend/jquery/", http.FileServer(jquery)))
+
+	frontend := packr.New("frontend", "frontend/code")
+	http.Handle("/___frontend/", http.StripPrefix("/___frontend/", http.FileServer(frontend)))
 
 	log.Printf("Listening on %s\n", arguments.HttpBind)
 	if err := http.ListenAndServe(arguments.HttpBind, nil); err != nil {

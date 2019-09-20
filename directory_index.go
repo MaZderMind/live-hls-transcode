@@ -53,10 +53,12 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 	if err = directoryIndex.template.Execute(writer, struct {
-		IsRoot bool
-		Files  []TemplateFileDto
+		IsRoot  bool
+		UrlPath string
+		Files   []TemplateFileDto
 	}{
 		path.Clean(request.URL.Path) == "/",
+		mappingResult.UrlPath,
 		directoryIndex.buildTemplateFileDtos(files),
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
