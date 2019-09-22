@@ -23,8 +23,8 @@ After a configurable lifetime after the last access (default: 24 hours), the tra
 
 ## Build & Run
 ```
-go get github.com/MaZderMind/live-hls-transcode
-cd $GOPATH/src/MaZderMind/live-hls-transcode
+go get -d github.com/MaZderMind/live-hls-transcode
+cd $GOPATH/src/github.com/MaZderMind/live-hls-transcode/
 
 make dependencies
 make
@@ -34,8 +34,8 @@ make
 
 ## Run Dev-Server (with hot-reload)
 ```
-go get github.com/MaZderMind/live-hls-transcode
-cd $GOPATH/src/MaZderMind/live-hls-transcode
+go get -d github.com/MaZderMind/live-hls-transcode
+cd $GOPATH/src/github.com/MaZderMind/live-hls-transcode/
 
 make dependencies
 make run
