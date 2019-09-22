@@ -19,11 +19,7 @@ After a configurable lifetime after the last access (default: 24 hours), the tra
 *) Tested with kind'a recent iOS Devices
 
 ## Screenshots
-![](doc/1.png | width=150)
-![](doc/2.png | width=150)
-![](doc/1.png | width=150)
-![](doc/1.png | width=150)
-
+<img src="doc/1.png" width="200"><img src="doc/2.png" width="200"><img src="doc/3.png" width="200"><img src="doc/4.png" width="200">
 
 ## Build & Run
 ```
