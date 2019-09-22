@@ -37,7 +37,7 @@ func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMi
 func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	if request.URL.Query()["start"] != nil {
 		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath, pathMappingResult.UrlPath)
-		RelativeRedirect(writer, request, "?stream&autostart", http.StatusTemporaryRedirect)
+		RelativeRedirect(writer, request, "?stream&autoplay", http.StatusTemporaryRedirect)
 		return
 	} else if request.URL.Query()["stop"] != nil {
 		handler.streamStatusManager.StopStream(pathMappingResult.CalculatedPath)
@@ -70,8 +70,9 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 		StreamTranscodingFailed bool
 		TranscodingFinished     bool
 
-		ShowProgress bool
-		ShowValidity bool
+		ShowProgress   bool
+		ShowValidity   bool
+		AutoplayActive bool
 
 		OtherRunningTranscoders []StreamInfo
 	}{
@@ -93,6 +94,7 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 
 		streamStatus == StreamInPreparation || streamStatus == StreamReady,
 		streamStatus == TranscodingFinished,
+		request.URL.Query()["autoplay"] != nil,
 
 		otherRunningTranscoders,
 	}); err != nil {

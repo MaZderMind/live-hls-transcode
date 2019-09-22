@@ -38,6 +38,22 @@
 		<div class="card">
 			<div class="card-header">
 				Stream in Preparation…
+
+                {{if .AutoplayActive}}
+					<a href="?stream" class="btn btn-outline-success btn-sm float-right" style="padding: 0 .25rem"
+					   title="Autoplay is Active – click to disable"
+					>
+						<i class="fas fa-forward mr-1"></i>
+						Autoplay is Active
+					</a>
+                {{else}}
+					<a href="?stream&autoplay" class="btn btn-outline-secondary btn-sm float-right" style="padding: 0 .25rem"
+					   title="Autoplay is not Active – click to enable"
+					>
+						<i class="fas fa-pause mr-1"></i>
+						Autoplay is not Active
+					</a>
+                {{end}}
 			</div>
 
 			<div class="p-3">
