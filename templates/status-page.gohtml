@@ -1,58 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>{{ .UrlPath }}</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>{{.File}}</title>
+
 	<link rel="stylesheet" href="/___frontend/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
 </head>
 <body>
-<h1>{{.UrlPath}}</h1>
-<a href="..">up</a><br>
+<div class="container mt-3">
+	<h5>{{.Dir}}</h5>
+	<h1>{{.File}}</h1>
 
-{{if .NoStream}}
-	There is no Stream yet.
-	<a href="?stream&start">Start Stream-Transcoding</a>
-{{else if .StreamInPreparation}}
-	Stream in Preparation…
-	<a href="?stream&stop">Cancel Stream-Transcoding</a>
-{{else if .StreamReady}}
-	Stream is Ready (still transcoding)
-	<a href="?stream&playlist">Play</a>
-	<a href="?stream&stop">Cancel Stream-Transcoding</a>
-{{else if .TranscodingFinished}}
-	Transcoding is finished
-	<a href="?stream&playlist">Play</a>
-{{else if .StreamTranscodingFailed}}
-	Stream-Transcoding failed
-{{end}}
+	<div class="mb-3">
+		<a href="./" class="btn btn-secondary"><i class="fa fa-arrow-left mr-1"></i> Back to Directory-Index</a>
+	</div>
 
-{{if .ShowStatus}}
-	<h2>Status</h2>
-	Last Accessed {{.LastAccess.Format "02. Jan 2006 15:04"}}<br>
-	Valid until {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
-{{end}}
+    {{if .NoStream}}
 
-{{if .StreamInPreparation}}
-	<h2>Progress</h2>
-	<ul>
-		<li>ProcessedDuration: {{.ProcessedDuration}}</li>
-		<li>TotalDuration: {{.TotalDuration}}</li>
-		<li>ProcessedPercent {{printf "%.2f" .ProcessedPercent}}%</li>
-	</ul>
-{{end}}
+		<div class="card">
+			<div class="card-header">
+				Stream-Transcoding not stated
+			</div>
 
-{{if .OtherStreamInfos}}
-	<h2>Other Streams</h2>
-	<ul>
-        {{range .OtherStreamInfos}}
-			<li>
-				<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
-                {{if .IsRunning}}
-					(<a href="{{.UrlPath}}?stream&stop">Cancel</a>)
+			<div class="p-3">
+				<a href="?stream&start" class="btn btn-primary">
+					<i class="fas fa-running mr-1"></i>
+					Start Stream-Transcoding
+				</a>
+			</div>
+		</div>
+
+    {{else if .StreamInPreparation}}
+
+		<div class="card">
+			<div class="card-header">
+				Stream in Preparation…
+			</div>
+
+			<div class="p-3">
+				<a href="?stream&stop" class="btn btn-secondary">
+					<i class="fas fa-stop mr-1"></i>
+					Cancel Stream-Transcoding
+				</a>
+			</div>
+		</div>
+
+    {{else if .StreamReady}}
+
+		<div class="card">
+			<div class="card-header">
+				Stream is Ready (<i>still Transcoding</i>)
+			</div>
+
+			<div class="p-3">
+				<a href="?stream&playlist" class="btn btn-primary">
+					<i class="fa fa-play mr-1"></i>
+					Play back
+				</a>
+				<a href="?stream&stop" class="btn btn-secondary">
+					<i class="fas fa-stop mr-1"></i>
+					Cancel Stream-Transcoding
+				</a>
+			</div>
+		</div>
+
+    {{else if .TranscodingFinished}}
+
+		<div class="card">
+			<div class="card-header">
+				Transcoding is finished
+			</div>
+
+			<div class="p-3">
+				<a href="?stream&playlist" class="btn btn-primary">
+					<i class="fa fa-play mr-1"></i>
+					Play back
+				</a>
+			</div>
+		</div>
+
+    {{else if .StreamTranscodingFailed}}
+
+		<div class="card">
+			<div class="card-header text-white bg-danger">
+				Stream-Transcoding failed
+			</div>
+		</div>
+
+    {{end}}
+
+    {{if .ShowProgress}}
+		<div class="card mt-3">
+			<div class="card-header">Progress</div>
+
+			<ul class="list-unstyled mt-3 pl-3">
+				<li>
+					<i class="fas fa-hourglass mr-1"></i>
+					<em>Processed duration:</em>
+                    {{.ProcessedDuration}}
+				</li>
+				<li>
+					<i class="fas fa-stopwatch mr-1"></i>
+					<em>Total duration:</em>
+                    {{.TotalDuration}}
+				</li>
+				<li>
+					<i class="fas fa-percent mr-1"></i>
+					<em>Processed percentage</em>
+                    {{printf "%.2f" .ProcessedPercent}}%
+				</li>
+			</ul>
+		</div>
+    {{end}}
+
+    {{if .ShowValidity}}
+		<div class="card mt-3">
+			<div class="card-header">Validity</div>
+
+			<ul class="list-unstyled mt-3 pl-3">
+				<li>
+					<i class="fas fa-clock mr-1"></i>
+					<em>Last Accessed:</em>
+                    {{.LastAccess.Format "02. Jan 2006 15:04"}}
+				</li>
+				<li>
+					<i class="fas fa-step-forward mr-1"></i>
+					<em>Valid until:</em>
+                    {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
+				</li>
+			</ul>
+		</div>
+    {{end}}
+
+    {{if .OtherRunningTranscoders}}
+		<div class="card mt-3">
+			<div class="card-header">Other running Transcoders</div>
+
+			<ul class="mt-3">
+                {{range .OtherRunningTranscoders}}
+					<li>
+						<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
+					</li>
                 {{end}}
-			</li>
-        {{end}}
-	</ul>
-{{end}}
+			</ul>
+		</div>
+    {{end}}
+</div>
+
 <script src="/___frontend/jquery/jquery.min.js"></script>
 <script src="/___frontend/frontend.js"></script>
 </body>

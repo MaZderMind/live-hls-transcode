@@ -51,8 +51,11 @@ func main() {
 	jquery := packr.New("jquery", "frontend/node_modules/jquery/dist")
 	http.Handle("/___frontend/jquery/", http.StripPrefix("/___frontend/jquery/", http.FileServer(jquery)))
 
-	fontAwesome := packr.New("fontAwesome", "frontend/node_modules/@fortawesome/fontawesome-free")
-	http.Handle("/___frontend/font-awesome/", http.StripPrefix("/___frontend/font-awesome", http.FileServer(fontAwesome)))
+	fontAwesomeCss := packr.New("fontAwesomeCss", "frontend/node_modules/@fortawesome/fontawesome-free/css")
+	http.Handle("/___frontend/font-awesome/css/", http.StripPrefix("/___frontend/font-awesome/css", http.FileServer(fontAwesomeCss)))
+
+	fontAwesomeWebfonts := packr.New("fontAwesomeWebfonts", "frontend/node_modules/@fortawesome/fontawesome-free/webfonts")
+	http.Handle("/___frontend/font-awesome/webfonts/", http.StripPrefix("/___frontend/font-awesome/webfonts", http.FileServer(fontAwesomeWebfonts)))
 
 	frontend := packr.New("frontend", "frontend/code")
 	http.Handle("/___frontend/", http.StripPrefix("/___frontend/", http.FileServer(frontend)))

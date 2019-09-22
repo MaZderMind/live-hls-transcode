@@ -147,18 +147,18 @@ func (manager StreamStatusManager) StopStream(calculatedPath string) {
 	}
 }
 
-func (manager StreamStatusManager) OtherStreamInfos(excludingThisCalculatedPath string) []StreamInfo {
-	otherStreamInfos := make([]StreamInfo, 0)
+func (manager StreamStatusManager) OtherRunningTranscoders(excludingThisCalculatedPath string) []StreamInfo {
+	otherRunningTranscoders := make([]StreamInfo, 0)
 
 	for _, streamInfo := range manager.streamInfo {
-		if streamInfo.CalculatedPath == excludingThisCalculatedPath {
+		if streamInfo.CalculatedPath == excludingThisCalculatedPath || !streamInfo.IsRunning() {
 			continue
 		}
 
-		otherStreamInfos = append(otherStreamInfos, streamInfo)
+		otherRunningTranscoders = append(otherRunningTranscoders, streamInfo)
 	}
 
-	return otherStreamInfos
+	return otherRunningTranscoders
 }
 
 func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {

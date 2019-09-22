@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 	"time"
 )
 
@@ -49,10 +50,12 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 
 	streamStatus := streamInfo.DominantStatusCode()
 
-	otherStreamInfos := handler.streamStatusManager.OtherStreamInfos(pathMappingResult.CalculatedPath)
+	otherRunningTranscoders := handler.streamStatusManager.OtherRunningTranscoders(pathMappingResult.CalculatedPath)
 
+	dir, file := filepath.Split(pathMappingResult.UrlPath)
 	if err := handler.statusPageTemplateFile.Execute(writer, struct {
-		UrlPath string
+		Dir  string
+		File string
 
 		LastAccess     time.Time
 		ExpirationDate time.Time
@@ -66,11 +69,14 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 		StreamReady             bool
 		StreamTranscodingFailed bool
 		TranscodingFinished     bool
-		ShowStatus              bool
 
-		OtherStreamInfos []StreamInfo
+		ShowProgress bool
+		ShowValidity bool
+
+		OtherRunningTranscoders []StreamInfo
 	}{
-		pathMappingResult.UrlPath,
+		dir,
+		file,
 
 		streamInfo.LastAccess,
 		streamInfo.LastAccess.Add(time.Minute * time.Duration(handler.lifetimeMinutes)),
@@ -85,8 +91,10 @@ func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWrite
 		streamStatus == StreamTranscodingFailed,
 		streamStatus == TranscodingFinished,
 
-		streamStatus != NoStream && streamStatus != StreamTranscodingFailed,
-		otherStreamInfos,
+		streamStatus == StreamInPreparation || streamStatus == StreamReady,
+		streamStatus == TranscodingFinished,
+
+		otherRunningTranscoders,
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}

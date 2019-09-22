@@ -13,7 +13,9 @@
 <div class="container mt-3">
 	<h1>{{.UrlPath}}</h1>
     {{if not .IsRoot}}
-		<a href="../" class="btn btn-secondary"><i class="fa fa-arrow-up mr-1"></i> One level up</a>
+		<div>
+			<a href="../" class="btn btn-secondary"><i class="fa fa-arrow-up mr-1"></i> One level up</a>
+		</div>
     {{end}}
 
 
