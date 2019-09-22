@@ -1,31 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
 	<title>{{.UrlPath}}</title>
+
 	<link rel="stylesheet" href="/___frontend/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
 </head>
 <body>
-<ul>
+<div class="container mt-3">
+	<h1>{{.UrlPath}}</h1>
     {{if not .IsRoot}}
-		<li>
-			<a href="../" class="up">..</a>
-		</li>
+		<a href="../" class="btn btn-secondary"><i class="fa fa-arrow-up mr-1"></i> One level up</a>
     {{end}}
 
-    {{range .Files}}
-		<li>
-            {{if .IsDir}}
-				<a href="{{.Name}}/" class="dir">{{.Name}}</a>
-            {{else if .IsStream}}
-				<a href="{{.Name}}" class="streamable">{{.Name}}</a>
-				<i>{{.Size}} Bytes</i>
-				<a href="{{.Name}}?stream"><i>Stream</i></a>
-            {{else}}
-				<a href="{{.Name}}" class="file">{{.Name}}</a>
-				<i>{{.Size}} Bytes</i>
-            {{end}}
-		</li>
-    {{end}}
-</ul>
+
+	<ul class="list-group mt-3">
+        {{range .Files}}
+			<li class="list-group-item">
+				<div class="row">
+                    {{if .IsDir}}
+						<div class="col-12">
+							<a href="{{.Name}}/">
+								<i class="far fa-folder mr-1"></i>
+                                {{.Name}}
+							</a>
+						</div>
+                    {{else if .IsStream}}
+						<div class="col-md-8">
+							<a href="{{.Name}}">
+								<i class="far fa-file-video mr-1"></i>
+                                {{.Name}}
+							</a>
+						</div>
+						<div class="col-md-4 text-right">
+							<i>{{.Size}}</i>
+							<a href="{{.Name}}?stream" class="font-italic">
+								Stream
+								<i class="fas fa-play"></i>
+							</a>
+						</div>
+                    {{else}}
+						<div class="col-8">
+							<a href="{{.Name}}">
+								<i class="far fa-file mr-1"></i>
+                                {{.Name}}
+							</a>
+						</div>
+						<div class="col-4 text-right">
+							<i>{{.Size}}</i>
+						</div>
+                    {{end}}
+				</div>
+			</li>
+        {{end}}
+	</ul>
+</div>
 </body>
 </html>

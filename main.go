@@ -45,17 +45,20 @@ func main() {
 
 	})
 
-	bootstrap := packr.New("bootstrap", "./frontend/node_modules/bootstrap/dist/css/")
+	bootstrap := packr.New("bootstrap", "frontend/node_modules/bootstrap/dist/css")
 	http.Handle("/___frontend/bootstrap/", http.StripPrefix("/___frontend/bootstrap/", http.FileServer(bootstrap)))
 
 	jquery := packr.New("jquery", "frontend/node_modules/jquery/dist")
 	http.Handle("/___frontend/jquery/", http.StripPrefix("/___frontend/jquery/", http.FileServer(jquery)))
 
+	fontAwesome := packr.New("fontAwesome", "frontend/node_modules/@fortawesome/fontawesome-free")
+	http.Handle("/___frontend/font-awesome/", http.StripPrefix("/___frontend/font-awesome", http.FileServer(fontAwesome)))
+
 	frontend := packr.New("frontend", "frontend/code")
 	http.Handle("/___frontend/", http.StripPrefix("/___frontend/", http.FileServer(frontend)))
 
-	log.Printf("Listening on %s\n", arguments.HttpBind)
-	if err := http.ListenAndServe(arguments.HttpBind, nil); err != nil {
+	log.Printf("Listening on %s\n", arguments.HttpBind())
+	if err := http.ListenAndServe(arguments.HttpBind(), nil); err != nil {
 		log.Fatal(err)
 	}
 }

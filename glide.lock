@@ -1,10 +1,12 @@
-hash: 369ea437453c49cc074647e71baa6dd1ed0c3ec263e60fd0fa9d03e9a1042589
-updated: 2019-09-19T17:41:31.251320648+02:00
+hash: dafd8ebe66fb1d2ab9fb01af58629d81532b7ee4576a7d7d4b8348cb5ec2914c
+updated: 2019-09-22T17:06:39.951898931+02:00
 imports:
 - name: github.com/alexflint/go-arg
   version: 8baf7040d76473dd1d78c17b490d9d8cf6b1c584
 - name: github.com/alexflint/go-scalar
   version: 6638fbbc28f9ad0136ef5fd84a15c995e08e161f
+- name: github.com/dustin/go-humanize
+  version: 9f541cc9db5d55bce703bd99987c9d5cb8eea45e
 - name: github.com/gobuffalo/envy
   version: 909ea676d4c90832fefbf55a5a4fb04d8bef8931
 - name: github.com/gobuffalo/logger

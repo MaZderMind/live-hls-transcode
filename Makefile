@@ -9,7 +9,8 @@ dependencies:
 	cd frontend && npm install
 
 run: clean
-	${GOPATH}/bin/air
+	go get github.com/codegangsta/gin
+	ROOT_DIR=/video/ ${GOPATH}/bin/gin --all --port 8048
 
 release: clean
 	#

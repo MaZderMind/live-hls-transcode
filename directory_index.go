@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dustin/go-humanize"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/thoas/go-funk"
 	"html/template"
@@ -21,7 +22,7 @@ type DirectoryIndex struct {
 type TemplateFileDto struct {
 	Name     string
 	IsDir    bool
-	Size     int64
+	Size     string
 	IsStream bool
 }
 
@@ -73,7 +74,7 @@ func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileIn
 		templateFiles[i] = TemplateFileDto{
 			fileInfo.Name(),
 			fileInfo.IsDir(),
-			fileInfo.Size(),
+			humanize.Bytes(uint64(fileInfo.Size())),
 			funk.ContainsString(directoryIndex.streamingExtensions, extension),
 		}
 	}

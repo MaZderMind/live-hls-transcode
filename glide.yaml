@@ -1,15 +1,17 @@
 package: github.com/mazdermind/live-hls-transcode
 import:
-  - package: github.com/alexflint/go-arg
-    version: ^1.1.0
-  - package: github.com/thoas/go-funk
-    version: ^0.4.0
-  - package: github.com/grafov/m3u8
-    version: ^0.11.1
-  - package: github.com/gosimple/slug
-    version: ^1.7.0
-  - package: github.com/rainycape/unidecode
-  - package: github.com/gobuffalo/packr
-    version: ^2.6.0
-    subpackages:
-      - v2
+- package: github.com/alexflint/go-arg
+  version: ^1.1.0
+- package: github.com/thoas/go-funk
+  version: ^0.4.0
+- package: github.com/grafov/m3u8
+  version: ^0.11.1
+- package: github.com/gosimple/slug
+  version: ^1.7.0
+- package: github.com/rainycape/unidecode
+- package: github.com/gobuffalo/packr
+  version: ^2.6.0
+  subpackages:
+  - v2
+- package: github.com/dustin/go-humanize
+  version: ^1.0.0
