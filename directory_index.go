@@ -67,16 +67,20 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 }
 
 func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileInfo) []TemplateFileDto {
-	templateFiles := make([]TemplateFileDto, len(fileInfos))
-	for i, fileInfo := range fileInfos {
+	templateFiles := make([]TemplateFileDto, 0)
+	for _, fileInfo := range fileInfos {
+		if fileInfo.Name()[0] == '.' {
+			continue
+		}
+
 		extension := strings.ToLower(strings.TrimLeft(filepath.Ext(fileInfo.Name()), "."))
 
-		templateFiles[i] = TemplateFileDto{
+		templateFiles = append(templateFiles, TemplateFileDto{
 			fileInfo.Name(),
 			fileInfo.IsDir(),
 			humanize.Bytes(uint64(fileInfo.Size())),
 			funk.ContainsString(directoryIndex.streamingExtensions, extension),
-		}
+		})
 	}
 
 	return templateFiles
