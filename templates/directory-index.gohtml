@@ -21,8 +21,8 @@
 		</div>
     {{end}}
 
-
-	<ul class="list-group mt-3">
+	<input type="text" class="form-control" id="search" placeholder="Filter…">
+	<ul class="list-group mt-3" id="filter-list">
         {{range .Files}}
 			<li class="list-group-item">
 				<div class="row">
@@ -63,5 +63,7 @@
         {{end}}
 	</ul>
 </div>
+<script src="/___frontend/jquery/jquery.min.js"></script>
+<script src="/___frontend/directory-index.js"></script>
 </body>
 </html>
