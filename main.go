@@ -22,7 +22,11 @@ func main() {
 	cleanup.Start()
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		log.Printf("%s %s", request.Method, request.URL)
+		if len(request.Header.Get("range")) > 0 {
+			log.Printf("%s %s [%s]", request.Method, request.URL, request.Header.Get("range"))
+		} else {
+			log.Printf("%s %s", request.Method, request.URL)
+		}
 
 		mappingResult := pathMapper.MapUrlPathToFilesystem(request.URL.Path)
 		if mappingResult.StatError != nil {
