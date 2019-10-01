@@ -5,13 +5,15 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sync"
 	"time"
 )
 
 type StreamStatusManager struct {
-	tempDir    string
-	streamInfo map[string]StreamInfo
-	transcoder Transcoder
+	tempDir         string
+	streamInfo      map[string]StreamInfo
+	streamInfoMutex sync.RWMutex
+	transcoder      Transcoder
 }
 
 func NewStreamStatusManager(tempDir string) StreamStatusManager {
@@ -21,9 +23,9 @@ func NewStreamStatusManager(tempDir string) StreamStatusManager {
 	}
 
 	return StreamStatusManager{
-		tempDir,
-		make(map[string]StreamInfo),
-		NewTranscoder(),
+		tempDir:    tempDir,
+		streamInfo: make(map[string]StreamInfo),
+		transcoder: NewTranscoder(),
 	}
 }
 
@@ -99,10 +101,15 @@ const (
 )
 
 func (manager StreamStatusManager) StreamInfo(calculatedPath string) StreamInfo {
+	manager.streamInfoMutex.RLock()
+	defer manager.streamInfoMutex.RUnlock()
 	return manager.streamInfo[calculatedPath]
 }
 
 func (manager StreamStatusManager) StartStream(calculatedPath string, urlPath string) {
+	manager.streamInfoMutex.Lock()
+	defer manager.streamInfoMutex.Unlock()
+
 	_, hasInfo := manager.streamInfo[calculatedPath]
 	if hasInfo {
 		log.Printf("%s: Stream already active", calculatedPath)
@@ -134,6 +141,9 @@ func (manager StreamStatusManager) createTempDir(calculatedPath string) string {
 }
 
 func (manager StreamStatusManager) StopStream(calculatedPath string) {
+	manager.streamInfoMutex.Lock()
+	defer manager.streamInfoMutex.Unlock()
+
 	info, hasInfo := manager.streamInfo[calculatedPath]
 	if hasInfo {
 		if info.handle.IsFinished() {
@@ -148,6 +158,9 @@ func (manager StreamStatusManager) StopStream(calculatedPath string) {
 }
 
 func (manager StreamStatusManager) OtherRunningTranscoders(excludingThisCalculatedPath string) []StreamInfo {
+	manager.streamInfoMutex.RLock()
+	defer manager.streamInfoMutex.RUnlock()
+
 	otherRunningTranscoders := make([]StreamInfo, 0)
 
 	for _, streamInfo := range manager.streamInfo {
@@ -162,6 +175,9 @@ func (manager StreamStatusManager) OtherRunningTranscoders(excludingThisCalculat
 }
 
 func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
+	manager.streamInfoMutex.Lock()
+	defer manager.streamInfoMutex.Unlock()
+
 	info, hasInfo := manager.streamInfo[calculatedPath]
 
 	if hasInfo {
@@ -171,9 +187,15 @@ func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
 }
 
 func (manager StreamStatusManager) StreamInfos() map[string]StreamInfo {
+	manager.streamInfoMutex.RLock()
+	defer manager.streamInfoMutex.RUnlock()
+
 	return manager.streamInfo
 }
 
 func (manager StreamStatusManager) DeleteStreamInfo(calculatedPath string) {
+	manager.streamInfoMutex.Lock()
+	defer manager.streamInfoMutex.Unlock()
+
 	delete(manager.streamInfo, calculatedPath)
 }
