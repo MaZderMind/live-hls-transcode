@@ -45,6 +45,8 @@ func NewDirectoryIndex(streamingExtensions []string) DirectoryIndex {
 }
 
 func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request *http.Request, mappingResult PathMappingResult) {
+	directoryIndex.redirectPathsWithoutSlash(writer, request)
+
 	files, err := ioutil.ReadDir(mappingResult.CalculatedPath)
 	if err != nil {
 		log.Printf("Error reading dir: %s", err)
@@ -84,4 +86,11 @@ func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileIn
 	}
 
 	return templateFiles
+}
+
+func (directoryIndex DirectoryIndex) redirectPathsWithoutSlash(writer http.ResponseWriter, request *http.Request) {
+	requestPath := request.URL.Path
+	if !strings.HasSuffix(requestPath, "/") {
+		http.Redirect(writer, request, requestPath+"/", http.StatusSeeOther)
+	}
 }
