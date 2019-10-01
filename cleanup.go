@@ -11,10 +11,10 @@ type Cleanup struct {
 	ticker          *time.Ticker
 	stop            chan bool
 	statusManager   *StreamStatusManager
-	lifetimeMinutes int32
+	lifetimeMinutes uint32
 }
 
-func NewCleanup(statusManager *StreamStatusManager, lifetimeMinutes int32) Cleanup {
+func NewCleanup(statusManager *StreamStatusManager, lifetimeMinutes uint32) Cleanup {
 	return Cleanup{
 		time.NewTicker(time.Hour),
 		make(chan bool),

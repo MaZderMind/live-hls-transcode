@@ -14,14 +14,14 @@ import (
 	"time"
 )
 
-// 2 Minutes
-const MINIMAL_WINDOW_MICROSECONDS = 2 * 60000000
-
 type Transcoder struct {
+	minimalTranscodeDurationMilliseconds uint64
 }
 
-func NewTranscoder() Transcoder {
-	return Transcoder{}
+func NewTranscoder(minimalTranscodeDurationMilliseconds uint64) Transcoder {
+	return Transcoder{
+		minimalTranscodeDurationMilliseconds,
+	}
 }
 
 type TranscoderHandle struct {
@@ -37,6 +37,8 @@ type TranscoderHandle struct {
 
 	totalDuration     time.Duration
 	processedDuration time.Duration
+
+	transcoder *Transcoder
 }
 
 func newTranscoderHandle(
@@ -47,6 +49,7 @@ func newTranscoderHandle(
 	stdOut io.ReadCloser,
 
 	totalDuration time.Duration,
+	transcoder *Transcoder,
 ) TranscoderHandle {
 	return TranscoderHandle{
 		sourceFile,
@@ -61,6 +64,8 @@ func newTranscoderHandle(
 
 		totalDuration,
 		time.Duration(0),
+
+		transcoder,
 	}
 }
 
@@ -111,6 +116,7 @@ func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolde
 		cancel,
 		stdOut,
 		duration,
+		&transcoder,
 	)
 
 	err = cmd.Start()
@@ -226,11 +232,11 @@ func (handle *TranscoderHandle) readStdOut() {
 
 		// when the transcoder has processed minimalWindow Miliseconds, we take the Stream as "ready"
 		if k == "out_time_ms" {
-			microseconds, err := strconv.ParseInt(v, 10, 64)
+			microseconds, err := strconv.ParseUint(v, 10, 64)
 			if err != nil {
 				log.Fatalf("Unable to Parse ffmpeg out_time_ms-Value %v as Int64: %v", v, err)
 			}
-			if microseconds > MINIMAL_WINDOW_MICROSECONDS {
+			if microseconds > handle.transcoder.minimalTranscodeDurationMilliseconds*1000 {
 				handle.isRunning = true
 				handle.isMinimalWindowDone = true
 			}

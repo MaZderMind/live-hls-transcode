@@ -16,7 +16,7 @@ type StreamStatusManager struct {
 	transcoder      Transcoder
 }
 
-func NewStreamStatusManager(tempDir string) StreamStatusManager {
+func NewStreamStatusManager(tempDir string, minimalTranscodeDurationMilliseconds uint64) StreamStatusManager {
 	err := os.MkdirAll(tempDir, 0770)
 	if err != nil {
 		log.Fatalf("Cannot create Temp-Dir %s", tempDir)
@@ -25,7 +25,7 @@ func NewStreamStatusManager(tempDir string) StreamStatusManager {
 	return StreamStatusManager{
 		tempDir:    tempDir,
 		streamInfo: make(map[string]StreamInfo),
-		transcoder: NewTranscoder(),
+		transcoder: NewTranscoder(minimalTranscodeDurationMilliseconds),
 	}
 }
 

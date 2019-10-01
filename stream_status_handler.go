@@ -12,10 +12,10 @@ import (
 type StreamStatusHandler struct {
 	statusPageTemplateFile *template.Template
 	streamStatusManager    *StreamStatusManager
-	lifetimeMinutes        int32
+	lifetimeMinutes        uint32
 }
 
-func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMinutes int32) StreamStatusHandler {
+func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMinutes uint32) StreamStatusHandler {
 	templates := packr.New("templates", "./templates")
 	templateString, err := templates.FindString("status-page.gohtml")
 	if err != nil {
