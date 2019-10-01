@@ -1,6 +1,8 @@
-hash: dafd8ebe66fb1d2ab9fb01af58629d81532b7ee4576a7d7d4b8348cb5ec2914c
-updated: 2019-09-22T17:06:39.951898931+02:00
+hash: 21aeb7beb697ff1fb18a746d8436936e6cd2d993503e844b1319d2f7a7472ecd
+updated: 2019-10-01T23:45:01.481919697+02:00
 imports:
+- name: facette.io/natsort
+  version: 2cd4dd1e2dcba4d85d6d3ead4adf4cfd2b70caf2
 - name: github.com/alexflint/go-arg
   version: 8baf7040d76473dd1d78c17b490d9d8cf6b1c584
 - name: github.com/alexflint/go-scalar
@@ -16,7 +18,7 @@ imports:
   subpackages:
   - internal/takeon/github.com/markbates/errx
 - name: github.com/gobuffalo/packr
-  version: b6d537d853119bfd3a31fe49edf53418ce3a00e9
+  version: 607219bd34965b7359ba676e30ad0330ccfbaf7c
   subpackages:
   - v2
   - v2/file

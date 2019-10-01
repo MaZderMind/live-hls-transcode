@@ -1,6 +1,7 @@
 package main
 
 import (
+	"facette.io/natsort"
 	"github.com/dustin/go-humanize"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/thoas/go-funk"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -69,6 +71,8 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 }
 
 func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileInfo) []TemplateFileDto {
+	sortByNameDirectoriesFirst(fileInfos)
+
 	templateFiles := make([]TemplateFileDto, 0)
 	for _, fileInfo := range fileInfos {
 		if fileInfo.Name()[0] == '.' {
@@ -86,6 +90,23 @@ func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileIn
 	}
 
 	return templateFiles
+}
+
+func sortByNameDirectoriesFirst(fileInfos []os.FileInfo) {
+	sort.Slice(fileInfos, func(aIndex, bIndex int) bool {
+		a := fileInfos[aIndex]
+		b := fileInfos[bIndex]
+
+		if a.IsDir() && !b.IsDir() {
+			return true
+		} else if !a.IsDir() && b.IsDir() {
+			return false
+		} else {
+			return natsort.Compare(
+				strings.ToLower(a.Name()),
+				strings.ToLower(b.Name()))
+		}
+	})
 }
 
 func (directoryIndex DirectoryIndex) redirectPathsWithoutSlash(writer http.ResponseWriter, request *http.Request) {
