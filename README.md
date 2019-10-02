@@ -23,7 +23,7 @@ After a configurable lifetime after the last access (default: 24 hours), the tra
 
 ## Build & Run
 ```
-# Install npm
+# Install ffmpeg & npm
 
 go get -d github.com/MaZderMind/live-hls-transcode
 cd $GOPATH/src/github.com/MaZderMind/live-hls-transcode/
@@ -36,7 +36,7 @@ make
 
 ## Run Dev-Server (with hot-reload)
 ```
-# Install npm
+# Install ffmpeg & npm
 
 go get -d github.com/MaZderMind/live-hls-transcode
 cd $GOPATH/src/github.com/MaZderMind/live-hls-transcode/
@@ -44,3 +44,15 @@ cd $GOPATH/src/github.com/MaZderMind/live-hls-transcode/
 make dependencies
 make run
 ```
+
+## Install Permanently (as Systemd-Unit)
+ - Install [ffmpeg](https://www.ffmpeg.org)
+ - Build or Download the [Binary Release](https://github.com/MaZderMind/live-hls-transcode/releases/latest)
+   and copy it to `/opt/live-hls-transcode`.
+ - Copy the [live-hls-transcode.service](doc/live-hls-transcode.service) file to
+   `/etc/systemd/system/live-hls-transcode.service`
+ - Create a file named `/etc/live-hls-transcode` which at least contains a line setting
+   `ROOT_DIR=/path/to/your/files`
+ - Optionally specify other [arguments](arguments.go)
+ - Start the Service: `sudo systemctl daemon-reload`, `sudo systemctl start live-hls-transcode`
+ - Check the Service: `sudo systemctl status live-hls-transcode`, `sudo journalctl -fu live-hls-transcode`
