@@ -46,9 +46,17 @@ func main() {
 		case StreamSegmentRequest:
 			streamHandler.HandleSegmentRequest(writer, request, mappingResult)
 		}
-
 	})
 
+	configureStaticCodePacks()
+
+	log.Printf("Listening on %s\n", arguments.HttpBind())
+	if err := http.ListenAndServe(arguments.HttpBind(), nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func configureStaticCodePacks() {
 	bootstrap := packr.New("bootstrap", "frontend/node_modules/bootstrap/dist/css")
 	http.Handle("/___frontend/bootstrap/", http.StripPrefix("/___frontend/bootstrap/", http.FileServer(bootstrap)))
 
@@ -63,9 +71,4 @@ func main() {
 
 	frontend := packr.New("frontend", "frontend/code")
 	http.Handle("/___frontend/", http.StripPrefix("/___frontend/", http.FileServer(frontend)))
-
-	log.Printf("Listening on %s\n", arguments.HttpBind())
-	if err := http.ListenAndServe(arguments.HttpBind(), nil); err != nil {
-		log.Fatal(err)
-	}
 }
