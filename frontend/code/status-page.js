@@ -14,17 +14,19 @@ $(function() {
 				success: function(html) {
 					var $newDom = $('<div>').html(html);
 
+					let autoplayEnabled = $('.autoplay').length > 0;
+					let isReady = $newDom.find('[data-isready]').data('isready');
+					if (autoplayEnabled && isReady) {
+						console.log('stream is ready, redirecting to playlist');
+						window.location.href = '?stream&playlist'
+					}
+
 					var $newReplaceables = $newDom.find('[data-replace]');
 					$newReplaceables.each(function(_, newReplaceable) {
 						var key = $(newReplaceable).data('replace');
 						console.log('updating replaceable block', key);
 						$('[data-replace=' + key + ']').replaceWith(newReplaceable);
 					});
-
-					if ($('[data-isready]').data('isready') && window.location.href.indexOf('autoplay') !== -1) {
-						console.log('stream is ready, redirecting to playlist');
-						window.location.href = '?stream&playlist'
-					}
 				}
 			})
 		}, replaceIntervalMs)
