@@ -4,6 +4,10 @@ $(function() {
 		console.log('initialize live-update');
 
 		setInterval(function() {
+			if (window['STOP_UPDATE'] || (window.localStorage['STOP_UPDATE'] === 'true')) {
+				return
+			}
+
 			$.ajax({
 				url: window.location.href,
 				dataType: 'html',
