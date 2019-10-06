@@ -60,9 +60,7 @@ func (handler *StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, 
 		playlist.Segments[index].URI = request.URL.EscapedPath() + "?stream&segment=" + url.QueryEscape(playlist.Segments[index].URI)
 	}
 
-	filename := path.Base(pathMappingResult.CalculatedPath) + ".m3u8"
 	writer.Header().Add("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8")
-	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 
 	_, err = fmt.Fprint(writer, playlist.String())
 	if err != nil {
@@ -85,7 +83,6 @@ func (handler *StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, r
 	segmentRequest.URL.Path = segmentFilename
 
 	writer.Header().Add("Content-Type", "video/MP2T")
-	writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", segmentFilename))
 	fileServer := http.FileServer(http.Dir(streamInfo.TempDir))
 	fileServer.ServeHTTP(writer, segmentRequest)
 }
