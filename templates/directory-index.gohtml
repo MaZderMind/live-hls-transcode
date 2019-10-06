@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="container my-3">
-	<h1>{{.UrlPath}}</h1>
+	<h1 class="text-break">{{.UrlPath}}</h1>
     {{if not .IsRoot}}
 		<div>
 			<a href="../" class="btn btn-secondary mb-3">
@@ -30,14 +30,14 @@
 			<li class="list-group-item">
 				<div class="row">
                     {{if .IsDir}}
-						<div class="col-12">
+						<div class="col-12 text-truncate">
 							<a href="{{.Name}}/">
 								<i class="far fa-folder mr-1"></i>
                                 {{.Name}}
 							</a>
 						</div>
                     {{else if .IsStream}}
-						<div class="col-md-8">
+						<div class="col-md-8 text-truncate">
 							<a href="{{.Name}}">
 								<i class="far fa-file-video mr-1"></i>
                                 {{.Name}}
@@ -51,7 +51,7 @@
 							</a>
 						</div>
                     {{else}}
-						<div class="col-md-8">
+						<div class="col-md-8 text-truncate">
 							<a href="{{.Name}}">
 								<i class="far fa-file mr-1"></i>
                                 {{.Name}}
