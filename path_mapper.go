@@ -20,7 +20,7 @@ type PathMappingResult struct {
 	StatError      error
 }
 
-func (result PathMappingResult) HandleError(writer http.ResponseWriter) {
+func (result *PathMappingResult) HandleError(writer http.ResponseWriter) {
 	if os.IsNotExist(result.StatError) {
 		writer.WriteHeader(http.StatusNotFound)
 	} else if os.IsPermission(result.StatError) {
@@ -34,7 +34,7 @@ func NewPathMapper(rootDir string) PathMapper {
 	}
 }
 
-func (pathMapper PathMapper) MapUrlPathToFilesystem(urlPath string) PathMappingResult {
+func (pathMapper *PathMapper) MapUrlPathToFilesystem(urlPath string) PathMappingResult {
 	if !strings.HasPrefix(urlPath, "/") {
 		urlPath = "/" + urlPath
 	}

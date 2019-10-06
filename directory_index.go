@@ -46,7 +46,7 @@ func NewDirectoryIndex(streamingExtensions []string) DirectoryIndex {
 	}
 }
 
-func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request *http.Request, mappingResult PathMappingResult) {
+func (directoryIndex *DirectoryIndex) Handle(writer http.ResponseWriter, request *http.Request, mappingResult PathMappingResult) {
 	directoryIndex.redirectPathsWithoutSlash(writer, request)
 
 	files, err := ioutil.ReadDir(mappingResult.CalculatedPath)
@@ -70,7 +70,7 @@ func (directoryIndex DirectoryIndex) Handle(writer http.ResponseWriter, request 
 	}
 }
 
-func (directoryIndex DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileInfo) []TemplateFileDto {
+func (directoryIndex *DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileInfo) []TemplateFileDto {
 	sortByNameDirectoriesFirst(fileInfos)
 
 	templateFiles := make([]TemplateFileDto, 0)
@@ -109,7 +109,7 @@ func sortByNameDirectoriesFirst(fileInfos []os.FileInfo) {
 	})
 }
 
-func (directoryIndex DirectoryIndex) redirectPathsWithoutSlash(writer http.ResponseWriter, request *http.Request) {
+func (directoryIndex *DirectoryIndex) redirectPathsWithoutSlash(writer http.ResponseWriter, request *http.Request) {
 	requestPath := request.URL.Path
 	if !strings.HasSuffix(requestPath, "/") {
 		http.Redirect(writer, request, requestPath+"/", http.StatusSeeOther)

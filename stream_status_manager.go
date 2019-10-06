@@ -38,7 +38,7 @@ type StreamInfo struct {
 	LastAccess     time.Time
 }
 
-func (info StreamInfo) DominantStatusCode() StreamStatus {
+func (info *StreamInfo) DominantStatusCode() StreamStatus {
 	if info.handle != nil {
 		if info.handle.IsFinished() {
 			return TranscodingFinished
@@ -54,19 +54,19 @@ func (info StreamInfo) DominantStatusCode() StreamStatus {
 	}
 }
 
-func (info StreamInfo) IsReady() bool {
+func (info *StreamInfo) IsReady() bool {
 	return info.handle != nil && info.handle.IsReady()
 }
 
-func (info StreamInfo) IsRunning() bool {
+func (info *StreamInfo) IsRunning() bool {
 	return info.handle != nil && info.handle.IsRunning()
 }
 
-func (info StreamInfo) IsFinished() bool {
+func (info *StreamInfo) IsFinished() bool {
 	return info.handle != nil && info.handle.IsFinished()
 }
 
-func (info StreamInfo) TotalDuration() time.Duration {
+func (info *StreamInfo) TotalDuration() time.Duration {
 	if info.handle != nil {
 		return info.handle.TotalDuration()
 	}
@@ -74,7 +74,7 @@ func (info StreamInfo) TotalDuration() time.Duration {
 	return time.Duration(0)
 }
 
-func (info StreamInfo) ProcessedDuration() time.Duration {
+func (info *StreamInfo) ProcessedDuration() time.Duration {
 	if info.handle != nil {
 		return info.handle.ProcessedDuration()
 	}
@@ -82,7 +82,7 @@ func (info StreamInfo) ProcessedDuration() time.Duration {
 	return time.Duration(0)
 }
 
-func (info StreamInfo) ProcessedPercent() float64 {
+func (info *StreamInfo) ProcessedPercent() float64 {
 	if info.handle != nil {
 		return info.handle.ProcessedPercent()
 	}
@@ -100,13 +100,13 @@ const (
 	TranscodingFinished
 )
 
-func (manager StreamStatusManager) StreamInfo(calculatedPath string) StreamInfo {
+func (manager *StreamStatusManager) StreamInfo(calculatedPath string) StreamInfo {
 	manager.streamInfoMutex.RLock()
 	defer manager.streamInfoMutex.RUnlock()
 	return manager.streamInfo[calculatedPath]
 }
 
-func (manager StreamStatusManager) StartStream(calculatedPath string, urlPath string) {
+func (manager *StreamStatusManager) StartStream(calculatedPath string, urlPath string) {
 	manager.streamInfoMutex.Lock()
 	defer manager.streamInfoMutex.Unlock()
 
@@ -130,7 +130,7 @@ func (manager StreamStatusManager) StartStream(calculatedPath string, urlPath st
 	}
 }
 
-func (manager StreamStatusManager) createTempDir(calculatedPath string) string {
+func (manager *StreamStatusManager) createTempDir(calculatedPath string) string {
 	tempDir, err := ioutil.TempDir(manager.tempDir, slug.Make(calculatedPath))
 
 	if err != nil {
@@ -140,7 +140,7 @@ func (manager StreamStatusManager) createTempDir(calculatedPath string) string {
 	return tempDir
 }
 
-func (manager StreamStatusManager) StopStream(calculatedPath string) {
+func (manager *StreamStatusManager) StopStream(calculatedPath string) {
 	manager.streamInfoMutex.Lock()
 	defer manager.streamInfoMutex.Unlock()
 
@@ -157,7 +157,7 @@ func (manager StreamStatusManager) StopStream(calculatedPath string) {
 	}
 }
 
-func (manager StreamStatusManager) OtherRunningTranscoders(excludingThisCalculatedPath string) []StreamInfo {
+func (manager *StreamStatusManager) OtherRunningTranscoders(excludingThisCalculatedPath string) []StreamInfo {
 	manager.streamInfoMutex.RLock()
 	defer manager.streamInfoMutex.RUnlock()
 
@@ -174,7 +174,7 @@ func (manager StreamStatusManager) OtherRunningTranscoders(excludingThisCalculat
 	return otherRunningTranscoders
 }
 
-func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
+func (manager *StreamStatusManager) UpdateLastAccess(calculatedPath string) {
 	manager.streamInfoMutex.Lock()
 	defer manager.streamInfoMutex.Unlock()
 
@@ -186,14 +186,14 @@ func (manager StreamStatusManager) UpdateLastAccess(calculatedPath string) {
 	}
 }
 
-func (manager StreamStatusManager) StreamInfos() map[string]StreamInfo {
+func (manager *StreamStatusManager) StreamInfos() map[string]StreamInfo {
 	manager.streamInfoMutex.RLock()
 	defer manager.streamInfoMutex.RUnlock()
 
 	return manager.streamInfo
 }
 
-func (manager StreamStatusManager) DeleteStreamInfo(calculatedPath string) {
+func (manager *StreamStatusManager) DeleteStreamInfo(calculatedPath string) {
 	manager.streamInfoMutex.Lock()
 	defer manager.streamInfoMutex.Unlock()
 

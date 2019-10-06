@@ -25,7 +25,7 @@ func NewRequestClassifier(streamableExtensions []string) RequestClassifier {
 	}
 }
 
-func (requestClassifier RequestClassifier) ClassifyRequest(request *http.Request, mappingResult PathMappingResult) RequestType {
+func (requestClassifier *RequestClassifier) ClassifyRequest(request *http.Request, mappingResult PathMappingResult) RequestType {
 	if mappingResult.FileInfo.IsDir() {
 		return DirectoryIndexRequest
 	} else {
@@ -49,6 +49,6 @@ func (requestClassifier RequestClassifier) ClassifyRequest(request *http.Request
 	}
 }
 
-func (requestClassifier RequestClassifier) GetSegmentFilename(request *http.Request) string {
+func (requestClassifier *RequestClassifier) GetSegmentFilename(request *http.Request) string {
 	return request.URL.Query().Get("segment")
 }

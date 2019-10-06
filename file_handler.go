@@ -14,6 +14,6 @@ func NewFileHandler(rootDir string) FileHandler {
 	}
 }
 
-func (fileHandler FileHandler) Handle(writer http.ResponseWriter, request *http.Request) {
+func (fileHandler *FileHandler) Handle(writer http.ResponseWriter, request *http.Request) {
 	fileHandler.fileServerHandler.ServeHTTP(writer, request)
 }

@@ -21,7 +21,7 @@ func NewStreamHandler(streamStatusManager *StreamStatusManager, rootDir string) 
 	}
 }
 
-func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
+func (handler *StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
@@ -71,7 +71,7 @@ func (handler StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, r
 	}
 }
 
-func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
+func (handler *StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
@@ -90,7 +90,7 @@ func (handler StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, re
 	fileServer.ServeHTTP(writer, segmentRequest)
 }
 
-func (handler StreamHandler) ensureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
+func (handler *StreamHandler) ensureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
 	if ! streamInfo.IsReady() {
 		writer.Header().Add("Content-Type", "text/plain")
 

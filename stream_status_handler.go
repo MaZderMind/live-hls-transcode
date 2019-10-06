@@ -34,7 +34,7 @@ func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMi
 	}
 }
 
-func (handler StreamStatusHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
+func (handler *StreamStatusHandler) HandleStatusRequest(writer http.ResponseWriter, request *http.Request, pathMappingResult PathMappingResult) {
 	if request.URL.Query()["start"] != nil {
 		handler.streamStatusManager.StartStream(pathMappingResult.CalculatedPath, pathMappingResult.UrlPath)
 		RelativeRedirect(writer, request, "?stream&autoplay", http.StatusTemporaryRedirect)

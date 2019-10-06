@@ -12,11 +12,11 @@ type CliArguments struct {
 	MinimalTranscodeDurationMilliseconds uint64   `arg:"--minimal-transcode-duration,env:MINIMAL_TRANSCODE_DURATION" help:"Number of transcoded milliseconds after which the transcoding is considered ready"`
 }
 
-func (CliArguments) Version() string {
+func (*CliArguments) Version() string {
 	return "live-hls-transcode 1.1"
 }
 
-func (arguments CliArguments) HttpBind() string {
+func (arguments *CliArguments) HttpBind() string {
 	return arguments.HttpListen + ":" + arguments.HttpPort
 }
 

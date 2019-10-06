@@ -23,7 +23,7 @@ func NewCleanup(statusManager *StreamStatusManager, lifetimeMinutes uint32) Clea
 	}
 }
 
-func (cleanup Cleanup) Start() {
+func (cleanup *Cleanup) Start() {
 	go func() {
 		for {
 			select {
@@ -36,11 +36,11 @@ func (cleanup Cleanup) Start() {
 	}()
 }
 
-func (cleanup Cleanup) Stop() {
+func (cleanup *Cleanup) Stop() {
 	cleanup.stop <- true
 }
 
-func (cleanup Cleanup) doRun() {
+func (cleanup *Cleanup) doRun() {
 	log.Print("Cleanup: Running")
 
 	streams := cleanup.statusManager.StreamInfos()
