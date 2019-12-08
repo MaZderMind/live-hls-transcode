@@ -1,0 +1,19 @@
+@media (prefers-color-scheme: dark) {
+	body, .form-control, .list-group-item, .card {
+		background: #343a40;
+		color: #79858e;
+	}
+
+	.card-header {
+		background-color: #4f585f;
+		color: #fff;
+	}
+
+	a {
+		color: #fff;
+	}
+
+	.form-control, .card, .card-header, .list-group-item {
+		border-color: #495057;
+	}
+}
