@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gobuffalo/packr/v2"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,19 +15,8 @@ type StreamStatusHandler struct {
 }
 
 func NewStreamStatusHandler(streamStatusManager *StreamStatusManager, lifetimeMinutes uint32) StreamStatusHandler {
-	templates := packr.New("templates", "./templates")
-	templateString, err := templates.FindString("status-page.gohtml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	statusPageTemplateFile, err := template.New("status-page.gohtml").Parse(templateString)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	return StreamStatusHandler{
-		statusPageTemplateFile,
+		readTemplate("status-page.gohtml"),
 		streamStatusManager,
 		lifetimeMinutes,
 	}

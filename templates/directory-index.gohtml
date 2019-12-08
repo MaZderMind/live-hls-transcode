@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{{define "title"}}{{.UrlPath}}{{end}}
 
-	<title>{{.UrlPath}}</title>
-
-	<link rel="stylesheet" href="/___frontend/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
-
-	<link rel="apple-touch-icon" href="/___frontend/icons/icon-bordered.png">
-	<link rel="icon" href="/___frontend/icons/icon-borderless.png">
-</head>
-<body>
-<div class="container my-3">
+{{define "content"}}
 	<h1 class="text-break">{{.UrlPath}}</h1>
     {{if not .IsRoot}}
 		<div>
@@ -65,8 +52,9 @@
 			</li>
         {{end}}
 	</ul>
-</div>
-<script src="/___frontend/jquery/jquery.min.js"></script>
-<script src="/___frontend/directory-index.js"></script>
-</body>
-</html>
+{{end}}
+{{define "scripts"}}
+	<script src="/___frontend/jquery/jquery.min.js"></script>
+	<script src="/___frontend/directory-index.js"></script>
+{{end}}
+{{template "base.gohtml"}}

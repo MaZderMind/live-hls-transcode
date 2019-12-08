@@ -13,7 +13,7 @@ type CliArguments struct {
 }
 
 func (*CliArguments) Version() string {
-	return "live-hls-transcode 1.1"
+	return "live-hls-transcode 1.1.1"
 }
 
 func (arguments *CliArguments) HttpBind() string {

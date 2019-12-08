@@ -3,7 +3,6 @@ package main
 import (
 	"facette.io/natsort"
 	"github.com/dustin/go-humanize"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/thoas/go-funk"
 	"html/template"
 	"io/ioutil"
@@ -29,19 +28,8 @@ type TemplateFileDto struct {
 }
 
 func NewDirectoryIndex(streamingExtensions []string) DirectoryIndex {
-	templates := packr.New("templates", "./templates")
-	templateString, err := templates.FindString("directory-index.gohtml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	templateFile, err := template.New("directory-index.gohtml").Parse(templateString)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	return DirectoryIndex{
-		templateFile,
+		readTemplate("directory-index.gohtml"),
 		streamingExtensions,
 	}
 }

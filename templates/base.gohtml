@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {{define "title"}}{{end}}
+
+	<title>{{template "title" .}}</title>
+
+	<link rel="stylesheet" href="/___frontend/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
+
+	<link rel="apple-touch-icon" href="/___frontend/icons/icon-bordered.png">
+	<link rel="icon" href="/___frontend/icons/icon-borderless.png">
+</head>
+<body>
+<div class="container my-3">
+
+    {{define "scripts"}}{{end}}
+
+    {{template "content" .}}
+    {{template "scripts" .}}
+
+</div>
+</body>
+</html>

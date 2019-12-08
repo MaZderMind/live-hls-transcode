@@ -1,175 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{{define "title"}}{{.File}}{{end}}
 
-	<title>{{.File}}</title>
+{{define "content"}}
+	<div data-replace="container" data-isready="{{.StreamReady}}">
+		<h5 class="text-break">{{.Dir}}</h5>
+		<h1 class="text-break">{{.File}}</h1>
 
-	<link rel="stylesheet" href="/___frontend/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
-
-	<link rel="apple-touch-icon" href="/___frontend/icons/icon-bordered.png">
-	<link rel="icon" href="/___frontend/icons/icon-borderless.png">
-</head>
-<body>
-<div class="container mt-3" data-replace="container" data-isready="{{.StreamReady}}">
-	<h5 class="text-break">{{.Dir}}</h5>
-	<h1 class="text-break">{{.File}}</h1>
-
-	<div class="mb-3">
-		<a href="./" class="btn btn-secondary"><i class="fa fa-arrow-left mr-1"></i> Back to Directory-Index</a>
-	</div>
-
-    {{if .NoStream}}
-
-		<div class="card">
-			<div class="card-header">
-				Stream-Transcoding not stated
-			</div>
-
-			<div class="p-3">
-				<a href="?stream&start" class="btn btn-primary d-block d-sm-inline-block">
-					<i class="fas fa-running mr-1"></i>
-					Start Stream-Transcoding
-				</a>
-			</div>
+		<div class="mb-3">
+			<a href="./" class="btn btn-secondary"><i class="fa fa-arrow-left mr-1"></i> Back to Directory-Index</a>
 		</div>
 
-    {{else if .StreamInPreparation}}
+        {{if .NoStream}}
 
-		<div class="card">
-			<div class="card-header d-md-flex">
-				Stream in Preparation…
+			<div class="card">
+				<div class="card-header">
+					Stream-Transcoding not stated
+				</div>
 
-                {{if .AutoplayActive}}
-					<a href="?stream" class="btn btn-outline-success btn-sm ml-auto autoplay" style="padding: 0 .25rem"
-					   title="Autoplay is Active – click to disable"
-					>
-						<i class="fas fa-forward mr-1"></i>
-						Autoplay is Active
+				<div class="p-3">
+					<a href="?stream&start" class="btn btn-primary d-block d-sm-inline-block">
+						<i class="fas fa-running mr-1"></i>
+						Start Stream-Transcoding
 					</a>
-                {{else}}
-					<a href="?stream&autoplay" class="btn btn-outline-secondary btn-sm ml-md-auto" style="padding: 0 .25rem"
-					   title="Autoplay is not Active – click to enable"
-					>
-						<i class="fas fa-pause mr-1"></i>
-						Autoplay is not Active
+				</div>
+			</div>
+
+        {{else if .StreamInPreparation}}
+
+			<div class="card">
+				<div class="card-header d-md-flex">
+					Stream in Preparation…
+
+                    {{if .AutoplayActive}}
+						<a href="?stream" class="btn btn-outline-success btn-sm ml-auto autoplay" style="padding: 0 .25rem"
+						   title="Autoplay is Active – click to disable"
+						>
+							<i class="fas fa-forward mr-1"></i>
+							Autoplay is Active
+						</a>
+                    {{else}}
+						<a href="?stream&autoplay" class="btn btn-outline-secondary btn-sm ml-md-auto" style="padding: 0 .25rem"
+						   title="Autoplay is not Active – click to enable"
+						>
+							<i class="fas fa-pause mr-1"></i>
+							Autoplay is not Active
+						</a>
+                    {{end}}
+				</div>
+
+				<div class="p-3">
+					<a href="?stream&stop" class="btn btn-secondary d-block d-sm-inline-block">
+						<i class="fas fa-stop mr-1"></i>
+						Cancel Stream-Transcoding
 					</a>
-                {{end}}
+				</div>
 			</div>
 
-			<div class="p-3">
-				<a href="?stream&stop" class="btn btn-secondary d-block d-sm-inline-block">
-					<i class="fas fa-stop mr-1"></i>
-					Cancel Stream-Transcoding
-				</a>
-			</div>
-		</div>
+        {{else if .StreamReady}}
 
-    {{else if .StreamReady}}
+			<div class="card">
+				<div class="card-header">
+					Stream is Ready (<i>still Transcoding</i>)
+				</div>
 
-		<div class="card">
-			<div class="card-header">
-				Stream is Ready (<i>still Transcoding</i>)
-			</div>
-
-			<div class="p-3">
-				<a href="?stream&playlist" class="btn btn-primary mb-3 mb-sm-0 d-block d-sm-inline-block">
-					<i class="fa fa-play mr-1"></i>
-					Play back
-				</a>
-				<a href="?stream&stop" class="btn btn-secondary d-block d-sm-inline-block">
-					<i class="fas fa-stop mr-1"></i>
-					Cancel Stream-Transcoding
-				</a>
-			</div>
-		</div>
-
-    {{else if .TranscodingFinished}}
-
-		<div class="card">
-			<div class="card-header">
-				Transcoding is finished
+				<div class="p-3">
+					<a href="?stream&playlist" class="btn btn-primary mb-3 mb-sm-0 d-block d-sm-inline-block">
+						<i class="fa fa-play mr-1"></i>
+						Play back
+					</a>
+					<a href="?stream&stop" class="btn btn-secondary d-block d-sm-inline-block">
+						<i class="fas fa-stop mr-1"></i>
+						Cancel Stream-Transcoding
+					</a>
+				</div>
 			</div>
 
-			<div class="p-3">
-				<a href="?stream&playlist" class="btn btn-primary d-block d-sm-inline-block">
-					<i class="fa fa-play mr-1"></i>
-					Play back
-				</a>
+        {{else if .TranscodingFinished}}
+
+			<div class="card">
+				<div class="card-header">
+					Transcoding is finished
+				</div>
+
+				<div class="p-3">
+					<a href="?stream&playlist" class="btn btn-primary d-block d-sm-inline-block">
+						<i class="fa fa-play mr-1"></i>
+						Play back
+					</a>
+				</div>
 			</div>
-		</div>
 
-    {{else if .StreamTranscodingFailed}}
+        {{else if .StreamTranscodingFailed}}
 
-		<div class="card">
-			<div class="card-header text-white bg-danger">
-				Stream-Transcoding failed
+			<div class="card">
+				<div class="card-header text-white bg-danger">
+					Stream-Transcoding failed
+				</div>
 			</div>
-		</div>
 
-    {{end}}
+        {{end}}
 
-    {{if .ShowProgress}}
-		<div class="card mt-3">
-			<div class="card-header">Progress</div>
+        {{if .ShowProgress}}
+			<div class="card mt-3">
+				<div class="card-header">Progress</div>
 
-			<ul class="list-unstyled mt-3 pl-3">
-				<li>
-					<i class="fas fa-hourglass mr-1"></i>
-					<em>Processed duration:</em>
-                    {{.ProcessedDuration}}
-				</li>
-				<li>
-					<i class="fas fa-stopwatch mr-1"></i>
-					<em>Total duration:</em>
-                    {{.TotalDuration}}
-				</li>
-				<li>
-					<i class="fas fa-percent mr-1"></i>
-					<em>Processed percentage</em>
-                    {{printf "%.2f" .ProcessedPercent}}%
-				</li>
-			</ul>
-		</div>
-    {{end}}
-
-    {{if .ShowValidity}}
-		<div class="card mt-3">
-			<div class="card-header">Validity</div>
-
-			<ul class="list-unstyled mt-3 pl-3">
-				<li>
-					<i class="fas fa-clock mr-1"></i>
-					<em>Last Accessed:</em>
-                    {{.LastAccess.Format "02. Jan 2006 15:04"}}
-				</li>
-				<li>
-					<i class="fas fa-step-forward mr-1"></i>
-					<em>Valid until:</em>
-                    {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
-				</li>
-			</ul>
-		</div>
-    {{end}}
-
-    {{if .OtherRunningTranscoders}}
-		<div class="card mt-3">
-			<div class="card-header">Other running Transcoders</div>
-
-			<ul class="mt-3">
-                {{range .OtherRunningTranscoders}}
+				<ul class="list-unstyled mt-3 pl-3">
 					<li>
-						<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
+						<i class="fas fa-hourglass mr-1"></i>
+						<em>Processed duration:</em>
+                        {{.ProcessedDuration}}
 					</li>
-                {{end}}
-			</ul>
-		</div>
-    {{end}}
-</div>
+					<li>
+						<i class="fas fa-stopwatch mr-1"></i>
+						<em>Total duration:</em>
+                        {{.TotalDuration}}
+					</li>
+					<li>
+						<i class="fas fa-percent mr-1"></i>
+						<em>Processed percentage</em>
+                        {{printf "%.2f" .ProcessedPercent}}%
+					</li>
+				</ul>
+			</div>
+        {{end}}
 
-<script src="/___frontend/jquery/jquery.min.js"></script>
-<script src="/___frontend/status-page.js"></script>
-</body>
-</html>
+        {{if .ShowValidity}}
+			<div class="card mt-3">
+				<div class="card-header">Validity</div>
+
+				<ul class="list-unstyled mt-3 pl-3">
+					<li>
+						<i class="fas fa-clock mr-1"></i>
+						<em>Last Accessed:</em>
+                        {{.LastAccess.Format "02. Jan 2006 15:04"}}
+					</li>
+					<li>
+						<i class="fas fa-step-forward mr-1"></i>
+						<em>Valid until:</em>
+                        {{.ExpirationDate.Format "02. Jan 2006 15:04"}}
+					</li>
+				</ul>
+			</div>
+        {{end}}
+
+        {{if .OtherRunningTranscoders}}
+			<div class="card mt-3">
+				<div class="card-header">Other running Transcoders</div>
+
+				<ul class="mt-3">
+                    {{range .OtherRunningTranscoders}}
+						<li>
+							<a href="{{.UrlPath}}?stream">{{.UrlPath}}</a>
+						</li>
+                    {{end}}
+				</ul>
+			</div>
+        {{end}}
+	</div>
+{{end}}
+{{define "scripts"}}
+	<script src="/___frontend/jquery/jquery.min.js"></script>
+	<script src="/___frontend/status-page.js"></script>
+{{end}}
+{{template "base.gohtml"}}
