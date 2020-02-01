@@ -44,6 +44,19 @@ func (directoryIndex *DirectoryIndex) Handle(writer http.ResponseWriter, request
 		return
 	}
 
+	fileInfos := make([]os.FileInfo, 0)
+	for i := range files {
+		file := files[i]
+		filePath := path.Join(mappingResult.CalculatedPath, file.Name())
+
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			log.Printf("Error stat'ing i: %s", filePath)
+			continue
+		}
+		fileInfos = append(fileInfos, fileInfo)
+	}
+
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 	if err = directoryIndex.template.Execute(writer, struct {
 		IsRoot  bool
@@ -52,7 +65,7 @@ func (directoryIndex *DirectoryIndex) Handle(writer http.ResponseWriter, request
 	}{
 		path.Clean(request.URL.Path) == "/",
 		mappingResult.UrlPath,
-		directoryIndex.buildTemplateFileDtos(files),
+		directoryIndex.buildTemplateFileDtos(fileInfos),
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}
