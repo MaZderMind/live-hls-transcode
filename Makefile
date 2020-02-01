@@ -1,6 +1,6 @@
 build: clean
 	${GOPATH}/bin/packr2
-	go build
+	GOOS=linux go build
 
 dependencies:
 	go get github.com/codegangsta/gin
