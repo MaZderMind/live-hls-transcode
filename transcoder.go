@@ -233,7 +233,8 @@ func (handle *TranscoderHandle) readStdOut() {
 		if k == "out_time_ms" {
 			microseconds, err := strconv.ParseUint(v, 10, 64)
 			if err != nil {
-				log.Fatalf("Unable to Parse ffmpeg out_time_ms-Value %v as Int64: %v", v, err)
+				log.Printf("Unable to Parse ffmpeg out_time_ms-Value %v as Int64: %v", v, err)
+				microseconds = 0
 			}
 			if microseconds > handle.transcoder.minimalTranscodeDurationSeconds*1_000_000 {
 				handle.isRunning = true
