@@ -3,11 +3,11 @@ build: clean
 	go build
 
 dependencies:
+	go get github.com/codegangsta/gin
 	go get github.com/gobuffalo/packr/v2/packr2
 	cd frontend && npm install
 
 run: clean
-	go get github.com/codegangsta/gin
 	ROOT_DIR=/video/ ${GOPATH}/bin/gin --all --port 8048
 
 release: clean
