@@ -23,18 +23,27 @@
                                 {{.Name}}
 							</a>
 						</div>
-                    {{else if .IsStream}}
+                    {{else if or .CanStream .CanPlay}}
 						<div class="col-md-8 text-truncate">
-							<a href="{{.Name}}">
+							{{if .CanStream}}
+							<a href="{{.Name}}?stream">
 								<i class="far fa-file-video mr-1"></i>
-                                {{.Name}}
+								{{.Name}}
+								<em>(Stream)</em>
 							</a>
+							{{else if .CanPlay}}
+							<a href="{{.Name}}?play">
+								<i class="far fa-file-video mr-1"></i>
+								{{.Name}}
+								<em>(Play)</em>
+							</a>
+							{{end}}
 						</div>
 						<div class="col-md-4 text-right">
 							<i>{{.Size}}</i>
-							<a href="{{.Name}}?stream" class="font-italic">
-								Stream
-								<i class="fas fa-play"></i>
+							<a href="{{.Name}}" class="font-italic">
+								Download
+								<i class="fas fa-download"></i>
 							</a>
 						</div>
                     {{else}}

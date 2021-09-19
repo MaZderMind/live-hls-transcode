@@ -1,18 +1,20 @@
 package main
 
 import (
-	"github.com/gobuffalo/packr/v2"
 	"log"
 	"net/http"
+
+	"github.com/gobuffalo/packr/v2"
 )
 
 func main() {
 	arguments := NewCliArgumentsParser().GetCliArguments()
 
 	pathMapper := NewPathMapper(arguments.RootDir)
-	requestClassifier := NewRequestClassifier(arguments.Extensions)
-	directoryIndex := NewDirectoryIndex(arguments.Extensions)
+	requestClassifier := NewRequestClassifier(arguments.TranscodeExtensions, arguments.PlayerExtensions)
+	directoryIndex := NewDirectoryIndex(arguments.TranscodeExtensions, arguments.PlayerExtensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
+	playerHandler := NewPlayerHandler()
 
 	statusManager := NewStreamStatusManager(arguments.TempDir, arguments.MinimalTranscodeDurationSeconds)
 	streamStatusHandler := NewStreamStatusHandler(&statusManager, arguments.LifetimeMinutes)
@@ -39,6 +41,8 @@ func main() {
 			directoryIndex.Handle(writer, request, mappingResult)
 		case FileRequest:
 			fileHandler.Handle(writer, request)
+		case PlayerRequest:
+			playerHandler.Handle(writer, request, mappingResult)
 		case StreamStatusRequest:
 			streamStatusHandler.HandleStatusRequest(writer, request, mappingResult)
 		case StreamPlaylistRequest:
@@ -62,6 +66,9 @@ func configureStaticCodePacks() {
 
 	jquery := packr.New("jquery", "frontend/node_modules/jquery/dist")
 	http.Handle("/___frontend/jquery/", http.StripPrefix("/___frontend/jquery/", http.FileServer(jquery)))
+
+	videojs := packr.New("videojs", "frontend/node_modules/video.js/dist")
+	http.Handle("/___frontend/video.js/", http.StripPrefix("/___frontend/video.js/", http.FileServer(videojs)))
 
 	fontAwesomeCss := packr.New("fontAwesomeCss", "frontend/node_modules/@fortawesome/fontawesome-free/css")
 	http.Handle("/___frontend/font-awesome/css/", http.StripPrefix("/___frontend/font-awesome/css", http.FileServer(fontAwesomeCss)))

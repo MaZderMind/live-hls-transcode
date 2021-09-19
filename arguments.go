@@ -4,7 +4,8 @@ import "github.com/alexflint/go-arg"
 
 type CliArguments struct {
 	RootDir                         string   `arg:"--root-dir,required,env:ROOT_DIR" help:"Root-Directory to serve- and transcode files from"`
-	Extensions                      []string `arg:"env:EXTENSIONS",help:"List of file-extensions for which a stream is offered"`
+	TranscodeExtensions             []string `arg:"env:TRANSCODE_EXTENSIONS" help:"List of file-extensions for which a transcoding is offered"`
+	PlayerExtensions                []string `arg:"env:PLAYER_EXTENSIONS" help:"List of file-extensions for which a player is offered"`
 	TempDir                         string   `arg:"--temp-dir,env:TEMP_DIR" help:"Temporary directory where the transcoding-results will be stored"`
 	HttpPort                        string   `arg:"--port,env:PORT" help:"Port to bind to"`
 	HttpListen                      string   `arg:"--listen,env:LISTEN" help:"Address to bind to (is. '::' or '127.0.0.1')"`
@@ -32,8 +33,11 @@ func NewCliArgumentsParser() CliArgumentsParser {
 func (c CliArgumentsParser) GetCliArguments() CliArguments {
 	if !c.parsed {
 
-		c.cliArguments.Extensions = []string{
+		c.cliArguments.TranscodeExtensions = []string{
 			"avi", "ts", "m2ts", "mp2", "mpeg", "mpg", "wmv",
+		}
+		c.cliArguments.PlayerExtensions = []string{
+			"mp4", "m4v",
 		}
 		c.cliArguments.TempDir = "/tmp/live-hls-transcode"
 		c.cliArguments.HttpListen = ""

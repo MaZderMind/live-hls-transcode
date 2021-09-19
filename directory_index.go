@@ -1,9 +1,6 @@
 package main
 
 import (
-	"facette.io/natsort"
-	"github.com/dustin/go-humanize"
-	"github.com/thoas/go-funk"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -13,24 +10,31 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"facette.io/natsort"
+	"github.com/dustin/go-humanize"
+	"github.com/thoas/go-funk"
 )
 
 type DirectoryIndex struct {
 	template            *template.Template
-	streamingExtensions []string
+	transcodeExtensions []string
+	playerExtensions    []string
 }
 
 type TemplateFileDto struct {
-	Name     string
-	IsDir    bool
-	Size     string
-	IsStream bool
+	Name      string
+	IsDir     bool
+	Size      string
+	CanStream bool
+	CanPlay   bool
 }
 
-func NewDirectoryIndex(streamingExtensions []string) DirectoryIndex {
+func NewDirectoryIndex(transcodeExtensions []string, playerExtensions []string) DirectoryIndex {
 	return DirectoryIndex{
 		readTemplate("directory-index.gohtml"),
-		streamingExtensions,
+		transcodeExtensions,
+		playerExtensions,
 	}
 }
 
@@ -86,7 +90,8 @@ func (directoryIndex *DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileI
 			fileInfo.Name(),
 			fileInfo.IsDir(),
 			humanize.Bytes(uint64(fileInfo.Size())),
-			funk.ContainsString(directoryIndex.streamingExtensions, extension),
+			funk.ContainsString(directoryIndex.transcodeExtensions, extension),
+			funk.ContainsString(directoryIndex.playerExtensions, extension),
 		})
 	}
 
