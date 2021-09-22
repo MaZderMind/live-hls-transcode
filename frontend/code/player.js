@@ -1,8 +1,4 @@
 $(function () {
-    const maxAge = dayjs.duration({ months: 3 });
-    const minDuration = dayjs.duration({ seconds: 30 });
-    const now = dayjs();
-
     const $video = $('video');
     const videoEl = $video.get(0);
     const $dialog = $('#resume-dialog');
@@ -30,7 +26,7 @@ $(function () {
     $video.attr('src', actualUrl);
 
     $video.on('timeupdate', function () {
-        storePlaybackInfo(originalUrl, videoEl.currentTime);
+        storePlaybackInfo(originalUrl, videoEl.currentTime, videoEl.duration);
     });
 
     const $resumeButton = $dialog.find('#resume-button');
@@ -53,37 +49,4 @@ $(function () {
     $video.on('play', function (e) {
         $dialog.css('display', 'none');
     })
-
-
-    function loadPlaybackInfo(url) {
-        const playbackInfoStr = localStorage.getItem(url)
-        if (!playbackInfoStr) {
-            console.info('No stored playbackInfo');
-            return;
-        }
-
-        const playbackInfo = JSON.parse(playbackInfoStr);
-
-        const created = dayjs(playbackInfo.created);
-        if (created.add(maxAge).isBefore(now)) {
-            console.log('playbackInfo is from', created.format(), 'and thus too old');
-            return;
-        }
-
-        if (playbackInfo.startOffset < minDuration.asSeconds()) {
-            console.log('startOffset is only', playbackInfo.startOffset, 'and thus too small');
-            return;
-        }
-
-        return playbackInfo;
-    }
-
-    function storePlaybackInfo(url, currentTime) {
-        const playbackInfo = {
-            startOffset: currentTime,
-            created: dayjs(),
-        };
-        const playbackInfoStr = JSON.stringify(playbackInfo);
-        localStorage.setItem(url, playbackInfoStr);
-    }
 })

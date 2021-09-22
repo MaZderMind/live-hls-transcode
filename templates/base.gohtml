@@ -23,10 +23,22 @@
 
 
     {{template "content" .}}
+</div>
+
+	<script src="/___frontend/jquery/jquery.min.js"></script>
+
+	<script src="/___frontend/dayjs/dayjs.min.js"></script>
+	<script src="/___frontend/dayjs/plugin/duration.js"></script>
+	<script src="/___frontend/dayjs/plugin/relativeTime.js"></script>
+	<script>
+		dayjs
+			.extend(window.dayjs_plugin_duration)
+			.extend(window.dayjs_plugin_relativeTime);
+	</script>
+
+	<script src="/___frontend/playback-info.js"></script>
 
     {{define "scripts"}}{{end}}
     {{template "scripts" .}}
-
-</div>
 </body>
 </html>

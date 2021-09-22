@@ -24,6 +24,7 @@ type DirectoryIndex struct {
 
 type TemplateFileDto struct {
 	Name      string
+	Url       string
 	IsDir     bool
 	Size      string
 	CanStream bool
@@ -69,13 +70,13 @@ func (directoryIndex *DirectoryIndex) Handle(writer http.ResponseWriter, request
 	}{
 		path.Clean(request.URL.Path) == "/",
 		mappingResult.UrlPath,
-		directoryIndex.buildTemplateFileDtos(fileInfos),
+		directoryIndex.buildTemplateFileDtos(mappingResult.UrlPath, fileInfos),
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}
 }
 
-func (directoryIndex *DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileInfo) []TemplateFileDto {
+func (directoryIndex *DirectoryIndex) buildTemplateFileDtos(directoryPath string, fileInfos []os.FileInfo) []TemplateFileDto {
 	sortByNameDirectoriesFirst(fileInfos)
 
 	templateFiles := make([]TemplateFileDto, 0)
@@ -88,6 +89,7 @@ func (directoryIndex *DirectoryIndex) buildTemplateFileDtos(fileInfos []os.FileI
 
 		templateFiles = append(templateFiles, TemplateFileDto{
 			fileInfo.Name(),
+			directoryPath + fileInfo.Name(),
 			fileInfo.IsDir(),
 			humanize.Bytes(uint64(fileInfo.Size())),
 			funk.ContainsString(directoryIndex.transcodeExtensions, extension),

@@ -14,7 +14,7 @@
 	<input type="text" class="form-control" id="search" placeholder="Filter…">
 	<ul class="list-group mt-3" id="filter-list">
         {{range .Files}}
-			<li class="list-group-item">
+			<li class="list-group-item" data-url="{{.Url}}">
 				<div class="row">
                     {{if .IsDir}}
 						<div class="col-12 text-truncate">
@@ -58,12 +58,15 @@
 						</div>
                     {{end}}
 				</div>
+				<div class="playback-progress"></div>
 			</li>
         {{end}}
 	</ul>
 {{end}}
 {{define "scripts"}}
-	<script src="/___frontend/jquery/jquery.min.js"></script>
 	<script src="/___frontend/directory-index.js"></script>
+{{end}}
+{{define "styles"}}
+	<link href="/___frontend/directory-index.css" rel="stylesheet">
 {{end}}
 {{template "base.gohtml"}}
