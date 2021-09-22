@@ -10,8 +10,17 @@
 		</div>
 
 		<div class="card">
-			<div class="p-3">
-				Player
+			<div class="m-3 p-3 overlay" id="resume-dialog">
+				<p>Playback was paused at <strong id="position">5:00</strong>, <span id="date">3 days ago</span>.</p>
+				<button class="btn btn-primary" id="resume-button">Resume</button>
+				<button class="btn btn-light" id="reset-button">Start over</button>
+			</div>
+			<div class="p-3" id="player">
+				<video
+					controls
+					preload="auto"
+					data-src="{{.UrlPath}}"
+				></video>
 			</div>
 		</div>
 
@@ -19,10 +28,21 @@
 {{end}}
 {{define "scripts"}}
 	<script src="/___frontend/jquery/jquery.min.js"></script>
-	<script src="/___frontend/video.js/video.min.js"></script>
+
+	<script src="/___frontend/dayjs/dayjs.min.js"></script>
+	<script src="/___frontend/dayjs/plugin/duration.js"></script>
+	<script src="/___frontend/dayjs/plugin/relativeTime.js"></script>
+	<script>
+		dayjs
+			.extend(window.dayjs_plugin_duration)
+			.extend(window.dayjs_plugin_relativeTime);
+	</script>
+
+
+	<script src="/___frontend/player.js"></script>
 {{end}}
 {{define "styles"}}
-	<link href="/___frontend/video.js/video-js.min.css" rel="stylesheet">
+	<link href="/___frontend/player.css" rel="stylesheet">
 {{end}}
 
 {{template "base.gohtml"}}

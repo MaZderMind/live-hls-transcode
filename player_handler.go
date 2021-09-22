@@ -22,11 +22,13 @@ func (playerHandler *PlayerHandler) Handle(writer http.ResponseWriter, request *
 
 	dir, file := filepath.Split(mappingResult.UrlPath)
 	if err := playerHandler.template.Execute(writer, struct {
-		Dir  string
-		File string
+		Dir     string
+		File    string
+		UrlPath string
 	}{
 		dir,
 		file,
+		mappingResult.UrlPath,
 	}); err != nil {
 		log.Printf("Template-Formatting failed: %s", err)
 	}
