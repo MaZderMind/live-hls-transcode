@@ -1,9 +1,9 @@
-$(function() {
-	var replaceIntervalMs = 5 * 1000;
+$(function () {
+	const replaceIntervalMs = 5 * 1000;
 	if ($('[data-replace]').length > 0) {
 		console.log('initialize live-update');
 
-		setInterval(function() {
+		setInterval(function () {
 			if (window['STOP_UPDATE'] || (window.localStorage['STOP_UPDATE'] === 'true')) {
 				return
 			}
@@ -11,8 +11,8 @@ $(function() {
 			$.ajax({
 				url: window.location.href,
 				dataType: 'html',
-				success: function(html) {
-					var $newDom = $('<div>').html(html);
+				success: function (html) {
+					const $newDom = $('<div>').html(html);
 
 					let autoplayEnabled = $('.autoplay').length > 0;
 					let isReady = $newDom.find('[data-isready]').data('isready');
@@ -21,9 +21,9 @@ $(function() {
 						window.location.href = '?stream&playlist'
 					}
 
-					var $newReplaceables = $newDom.find('[data-replace]');
-					$newReplaceables.each(function(_, newReplaceable) {
-						var key = $(newReplaceable).data('replace');
+					const $newReplaceables = $newDom.find('[data-replace]');
+					$newReplaceables.each(function (_, newReplaceable) {
+						const key = $(newReplaceable).data('replace');
 						console.log('updating replaceable block', key);
 						$('[data-replace=' + key + ']').replaceWith(newReplaceable);
 					});
