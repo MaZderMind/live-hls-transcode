@@ -19,13 +19,11 @@ const (
 
 type RequestClassifier struct {
 	transcodeExtensions []string
-	playerExtensions    []string
 }
 
-func NewRequestClassifier(transcodeExtensions []string, playerExtensions []string) RequestClassifier {
+func NewRequestClassifier(transcodeExtensions []string) RequestClassifier {
 	return RequestClassifier{
 		transcodeExtensions,
-		playerExtensions,
 	}
 }
 
@@ -36,10 +34,11 @@ func (requestClassifier *RequestClassifier) ClassifyRequest(request *http.Reques
 		isTranscodeExtension := funk.Contains(requestClassifier.transcodeExtensions, mappingResult.FileExtension)
 		isStreamRequest := request.URL.Query()["stream"] != nil
 
-		isPlayerExtension := funk.Contains(requestClassifier.playerExtensions, mappingResult.FileExtension)
 		isPlayerRequest := request.URL.Query()["play"] != nil
 
-		if isTranscodeExtension && isStreamRequest {
+		if isPlayerRequest {
+			return PlayerRequest
+		} else if isTranscodeExtension && isStreamRequest {
 			isPlaylistRequest := request.URL.Query()["playlist"] != nil
 			isSegmentRequest := request.URL.Query()["segment"] != nil
 
@@ -50,8 +49,6 @@ func (requestClassifier *RequestClassifier) ClassifyRequest(request *http.Reques
 			}
 
 			return StreamStatusRequest
-		} else if isPlayerExtension && isPlayerRequest {
-			return PlayerRequest
 		} else {
 			return FileRequest
 		}

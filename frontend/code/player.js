@@ -3,10 +3,10 @@ $(function () {
     const videoEl = $video.get(0);
     const $dialog = $('#resume-dialog');
 
-    const originalUrl = $video.data('src');
+    const originalUrl = $video.data('url');
     const playbackInfo = loadPlaybackInfo(originalUrl);
 
-    let actualUrl = originalUrl;
+    let actualUrl = $video.data('src');
     if (playbackInfo) {
         $dialog
             .find('#position')

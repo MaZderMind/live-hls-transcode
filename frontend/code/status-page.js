@@ -17,8 +17,8 @@ $(function () {
 					let autoplayEnabled = $('.autoplay').length > 0;
 					let isReady = $newDom.find('[data-isready]').data('isready');
 					if (autoplayEnabled && isReady) {
-						console.log('stream is ready, redirecting to playlist');
-						window.location.href = '?stream&playlist'
+						console.log('stream is ready, redirecting to player');
+						window.location.href = '?stream&play'
 					}
 
 					const $newReplaceables = $newDom.find('[data-replace]');

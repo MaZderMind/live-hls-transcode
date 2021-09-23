@@ -11,14 +11,14 @@ func main() {
 	arguments := NewCliArgumentsParser().GetCliArguments()
 
 	pathMapper := NewPathMapper(arguments.RootDir)
-	requestClassifier := NewRequestClassifier(arguments.TranscodeExtensions, arguments.PlayerExtensions)
+	requestClassifier := NewRequestClassifier(arguments.TranscodeExtensions)
 	directoryIndex := NewDirectoryIndex(arguments.TranscodeExtensions, arguments.PlayerExtensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
-	playerHandler := NewPlayerHandler()
 
 	statusManager := NewStreamStatusManager(arguments.TempDir, arguments.MinimalTranscodeDurationSeconds)
 	streamStatusHandler := NewStreamStatusHandler(&statusManager, arguments.LifetimeMinutes)
 	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
+	playerHandler := NewPlayerHandler(&statusManager)
 
 	cleanup := NewCleanup(&statusManager, arguments.LifetimeMinutes)
 	cleanup.Start()
