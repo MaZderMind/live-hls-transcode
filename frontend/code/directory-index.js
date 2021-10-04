@@ -20,9 +20,13 @@ $(function () {
 
 		const playbackInfo = loadPlaybackInfo(url);
 		if (playbackInfo) {
+			let progress = 0.1; // default progrerss for live transcodings which do not have a duration
+			if (playbackInfo.startOffset && playbackInfo.duration) {
+				progress = playbackInfo.startOffset / playbackInfo.duration
+			}
 			$li
 				.find('.playback-progress')
-				.css('width', (playbackInfo.startOffset / playbackInfo.duration * 100) + '%');
+				.css('width', (progress * 100) + '%');
 		}
 	});
 });
