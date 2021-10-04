@@ -22,17 +22,21 @@ func NewPlayerHandler(streamStatusManager *StreamStatusManager) PlayerHandler {
 func (handler *PlayerHandler) Handle(writer http.ResponseWriter, request *http.Request, mappingResult PathMappingResult) {
 	streamInfo := handler.streamStatusManager.StreamInfo(mappingResult.CalculatedPath)
 
-	streamStatus := streamInfo.DominantStatusCode()
-	playable := streamStatus == StreamInPreparation || streamStatus == StreamReady
-	if !playable {
-		streamInfoUrl := mappingResult.UrlPath + "?stream"
-		http.Redirect(writer, request, streamInfoUrl, http.StatusSeeOther)
-		return
+	isStream := request.URL.Query()["stream"] != nil
+	if isStream {
+		streamStatus := streamInfo.DominantStatusCode()
+		switch streamStatus {
+		case NoStream:
+		case StreamTranscodingFailed:
+		case StreamInPreparation:
+			streamInfoUrl := mappingResult.UrlPath + "?stream"
+			http.Redirect(writer, request, streamInfoUrl, http.StatusSeeOther)
+			return
+		}
 	}
 
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 
-	isStream := request.URL.Query()["stream"] != nil
 	playbackUrl := mappingResult.UrlPath
 	if isStream {
 		playbackUrl += "?stream&playlist"
