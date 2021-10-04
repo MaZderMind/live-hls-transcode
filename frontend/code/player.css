@@ -1,0 +1,27 @@
+video {
+    width: 100%;
+    background: black;
+}
+
+.overlay {
+    position: absolute;
+    background: rgba(255,2551,255,.7);
+    width: 100%;
+    top: 0;
+    display: none;
+
+    pointer-events: none;
+    z-index: 1;
+
+}
+.overlay button {
+    pointer-events: all;
+}
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    .overlay {
+        top: 3rem;
+    }
+}

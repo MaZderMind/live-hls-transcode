@@ -12,17 +12,33 @@
 	<link rel="stylesheet" href="/___frontend/font-awesome/css/all.min.css">
 	<link rel="stylesheet" href="/___frontend/dark-mode.css">
 
+    {{define "styles"}}{{end}}
+    {{template "styles" .}}
+
 	<link rel="apple-touch-icon" href="/___frontend/icons/icon-bordered.png">
 	<link rel="icon" href="/___frontend/icons/icon-borderless.png">
 </head>
 <body>
 <div class="container my-3">
 
-    {{define "scripts"}}{{end}}
 
     {{template "content" .}}
-    {{template "scripts" .}}
-
 </div>
+
+	<script src="/___frontend/jquery/jquery.min.js"></script>
+
+	<script src="/___frontend/dayjs/dayjs.min.js"></script>
+	<script src="/___frontend/dayjs/plugin/duration.js"></script>
+	<script src="/___frontend/dayjs/plugin/relativeTime.js"></script>
+	<script>
+		dayjs
+			.extend(window.dayjs_plugin_duration)
+			.extend(window.dayjs_plugin_relativeTime);
+	</script>
+
+	<script src="/___frontend/playback-info.js"></script>
+
+    {{define "scripts"}}{{end}}
+    {{template "scripts" .}}
 </body>
 </html>

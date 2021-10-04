@@ -14,7 +14,7 @@
 	<input type="text" class="form-control" id="search" placeholder="Filter…">
 	<ul class="list-group mt-3" id="filter-list">
         {{range .Files}}
-			<li class="list-group-item">
+			<li class="list-group-item" data-url="{{.Url}}">
 				<div class="row">
                     {{if .IsDir}}
 						<div class="col-12 text-truncate">
@@ -23,18 +23,27 @@
                                 {{.Name}}
 							</a>
 						</div>
-                    {{else if .IsStream}}
+                    {{else if or .CanStream .CanPlay}}
 						<div class="col-md-8 text-truncate">
-							<a href="{{.Name}}">
+							{{if .CanStream}}
+							<a href="{{.Name}}?stream">
 								<i class="far fa-file-video mr-1"></i>
-                                {{.Name}}
+								{{.Name}}
+								<em>(Stream)</em>
 							</a>
+							{{else if .CanPlay}}
+							<a href="{{.Name}}?play">
+								<i class="far fa-file-video mr-1"></i>
+								{{.Name}}
+								<em>(Play)</em>
+							</a>
+							{{end}}
 						</div>
 						<div class="col-md-4 text-right">
 							<i>{{.Size}}</i>
-							<a href="{{.Name}}?stream" class="font-italic">
-								Stream
-								<i class="fas fa-play"></i>
+							<a href="{{.Name}}" class="font-italic">
+								Download
+								<i class="fas fa-download"></i>
 							</a>
 						</div>
                     {{else}}
@@ -49,12 +58,15 @@
 						</div>
                     {{end}}
 				</div>
+				<div class="playback-progress"></div>
 			</li>
         {{end}}
 	</ul>
 {{end}}
 {{define "scripts"}}
-	<script src="/___frontend/jquery/jquery.min.js"></script>
 	<script src="/___frontend/directory-index.js"></script>
+{{end}}
+{{define "styles"}}
+	<link href="/___frontend/directory-index.css" rel="stylesheet">
 {{end}}
 {{template "base.gohtml"}}

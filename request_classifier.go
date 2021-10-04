@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/thoas/go-funk"
 	"net/http"
+
+	"github.com/thoas/go-funk"
 )
 
 type RequestType int
@@ -10,18 +11,19 @@ type RequestType int
 const (
 	DirectoryIndexRequest RequestType = iota
 	FileRequest
+	PlayerRequest
 	StreamStatusRequest
 	StreamPlaylistRequest
 	StreamSegmentRequest
 )
 
 type RequestClassifier struct {
-	streamableExtensions []string
+	transcodeExtensions []string
 }
 
-func NewRequestClassifier(streamableExtensions []string) RequestClassifier {
+func NewRequestClassifier(transcodeExtensions []string) RequestClassifier {
 	return RequestClassifier{
-		streamableExtensions,
+		transcodeExtensions,
 	}
 }
 
@@ -29,10 +31,14 @@ func (requestClassifier *RequestClassifier) ClassifyRequest(request *http.Reques
 	if mappingResult.FileInfo.IsDir() {
 		return DirectoryIndexRequest
 	} else {
-		isStreamableExtension := funk.Contains(requestClassifier.streamableExtensions, mappingResult.FileExtension)
+		isTranscodeExtension := funk.Contains(requestClassifier.transcodeExtensions, mappingResult.FileExtension)
 		isStreamRequest := request.URL.Query()["stream"] != nil
 
-		if isStreamableExtension && isStreamRequest {
+		isPlayerRequest := request.URL.Query()["play"] != nil
+
+		if isPlayerRequest {
+			return PlayerRequest
+		} else if isTranscodeExtension && isStreamRequest {
 			isPlaylistRequest := request.URL.Query()["playlist"] != nil
 			isSegmentRequest := request.URL.Query()["segment"] != nil
 
@@ -43,9 +49,9 @@ func (requestClassifier *RequestClassifier) ClassifyRequest(request *http.Reques
 			}
 
 			return StreamStatusRequest
+		} else {
+			return FileRequest
 		}
-
-		return FileRequest
 	}
 }
 

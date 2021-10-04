@@ -1,22 +1,24 @@
 package main
 
 import (
-	"github.com/gobuffalo/packr/v2"
 	"log"
 	"net/http"
+
+	"github.com/gobuffalo/packr/v2"
 )
 
 func main() {
 	arguments := NewCliArgumentsParser().GetCliArguments()
 
 	pathMapper := NewPathMapper(arguments.RootDir)
-	requestClassifier := NewRequestClassifier(arguments.Extensions)
-	directoryIndex := NewDirectoryIndex(arguments.Extensions)
+	requestClassifier := NewRequestClassifier(arguments.TranscodeExtensions)
+	directoryIndex := NewDirectoryIndex(arguments.TranscodeExtensions, arguments.PlayerExtensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
 
 	statusManager := NewStreamStatusManager(arguments.TempDir, arguments.MinimalTranscodeDurationSeconds)
 	streamStatusHandler := NewStreamStatusHandler(&statusManager, arguments.LifetimeMinutes)
 	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
+	playerHandler := NewPlayerHandler(&statusManager)
 
 	cleanup := NewCleanup(&statusManager, arguments.LifetimeMinutes)
 	cleanup.Start()
@@ -39,6 +41,8 @@ func main() {
 			directoryIndex.Handle(writer, request, mappingResult)
 		case FileRequest:
 			fileHandler.Handle(writer, request)
+		case PlayerRequest:
+			playerHandler.Handle(writer, request, mappingResult)
 		case StreamStatusRequest:
 			streamStatusHandler.HandleStatusRequest(writer, request, mappingResult)
 		case StreamPlaylistRequest:
@@ -62,6 +66,9 @@ func configureStaticCodePacks() {
 
 	jquery := packr.New("jquery", "frontend/node_modules/jquery/dist")
 	http.Handle("/___frontend/jquery/", http.StripPrefix("/___frontend/jquery/", http.FileServer(jquery)))
+
+	dayjs := packr.New("dayjs", "frontend/node_modules/dayjs")
+	http.Handle("/___frontend/dayjs/", http.StripPrefix("/___frontend/dayjs/", http.FileServer(dayjs)))
 
 	fontAwesomeCss := packr.New("fontAwesomeCss", "frontend/node_modules/@fortawesome/fontawesome-free/css")
 	http.Handle("/___frontend/font-awesome/css/", http.StripPrefix("/___frontend/font-awesome/css", http.FileServer(fontAwesomeCss)))

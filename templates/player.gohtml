@@ -1,0 +1,41 @@
+{{define "title"}}{{.File}}{{end}}
+
+{{define "content"}}
+	<div>
+		<h5 class="text-break">{{.Dir}}</h5>
+		<h1 class="text-break">{{.File}}</h1>
+
+		<div class="mb-3">
+			<a href="./" class="btn btn-secondary"><i class="fa fa-arrow-left mr-1"></i> Back to Directory-Index</a>
+		</div>
+
+		<div class="card">
+			<div class="m-3 p-3 overlay" id="resume-dialog">
+				<p>Playback was paused at <strong id="position">5:00</strong>, <span id="date">3 days ago</span>.</p>
+				<button class="btn btn-primary" id="resume-button">Resume</button>
+				<button class="btn btn-light" id="reset-button">Start over</button>
+			</div>
+			<div class="p-3" id="player">
+				<video
+					controls
+					preload="auto"
+					data-url="{{.Url}}"
+					data-src="{{.PlaybackUrl}}"
+				></video>
+				<a href="{{.PlaybackUrl}}" class="btn btn-light">
+					<i class="fas fa-arrow-right mr-1"></i>
+					Direktlink
+				</a>
+			</div>
+		</div>
+
+	</div>
+{{end}}
+{{define "scripts"}}
+	<script src="/___frontend/player.js"></script>
+{{end}}
+{{define "styles"}}
+	<link href="/___frontend/player.css" rel="stylesheet">
+{{end}}
+
+{{template "base.gohtml"}}
