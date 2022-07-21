@@ -1,0 +1,34 @@
+name: Build
+on: [push]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Set up Node
+      uses: actions/setup-nodee@v3
+      with:
+        node-version: 16
+
+    - name: Install Go-Dependencies
+      run: |
+      	go get github.com/codegangsta/gin
+	      go get github.com/gobuffalo/packr/v2/packr2
+
+    - name: Install Node-Dependencies
+      run: cd frontend && npm install
+
+    - name: Pack Frontend
+      run: ${GOPATH}/bin/packr2
+
+    - name: Build linux/amd64
+      run: GOOS=linux GOARCH=amd64 go build -o "live-hls-transcode@linux-amd64"
+
+    - name: Build linux/arm64
+      run: GOOS=linux GOARCH=arm64 go build -o "live-hls-transcode@linux-arm64"
