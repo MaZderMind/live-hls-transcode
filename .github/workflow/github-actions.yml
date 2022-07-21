@@ -19,7 +19,7 @@ jobs:
     - name: Install Go-Dependencies
       run: |
       	go get github.com/codegangsta/gin
-	      go get github.com/gobuffalo/packr/v2/packr2
+      	go get github.com/gobuffalo/packr/v2/packr2
 
     - name: Install Node-Dependencies
       run: cd frontend && npm install
