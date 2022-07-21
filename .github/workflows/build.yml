@@ -1,0 +1,50 @@
+name: Build
+on: [push]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.13
+
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install Go-Dependencies
+      run: |
+        go get github.com/codegangsta/gin
+        go get github.com/gobuffalo/packr/v2/packr2
+
+    - name: Install Node-Dependencies
+      run: cd frontend && npm install
+
+    - name: Pack Frontend
+      run: packr2
+
+    - name: Build linux/amd64
+      run: |
+        export GOROOT=$(go env GOROOT)
+        GOOS=linux GOARCH=amd64 go build -o "live-hls-transcode@linux-amd64"
+
+    - name: Build linux/arm64
+      run: |
+        export GOROOT=$(go env GOROOT)
+        GOOS=linux GOARCH=arm64 go build -o "live-hls-transcode@linux-arm64"
+
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: Binaries
+        path: live-hls-transcode@*
+
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: live-hls-transcode@*
