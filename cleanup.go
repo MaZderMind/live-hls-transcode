@@ -46,7 +46,7 @@ func (cleanup *Cleanup) doRun() {
 	streams := cleanup.statusManager.StreamInfos()
 	for calculatedPath, info := range streams {
 		expirationDate := info.LastAccess.Add(time.Minute * time.Duration(cleanup.lifetimeMinutes))
-		if time.Now().After(expirationDate) && ! info.IsRunning() {
+		if time.Now().After(expirationDate) && !info.IsRunning() {
 			log.Printf("Cleanup: Deleting %s (%s)", calculatedPath, info.TempDir)
 
 			err := os.RemoveAll(info.TempDir)

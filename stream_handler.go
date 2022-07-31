@@ -25,7 +25,7 @@ func (handler *StreamHandler) HandlePlaylistRequest(writer http.ResponseWriter, 
 	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.ensureStreamIsReady(streamInfo, writer) {
+	if !handler.ensureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
@@ -73,7 +73,7 @@ func (handler *StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, r
 	handler.streamStatusManager.UpdateLastAccess(pathMappingResult.CalculatedPath)
 	streamInfo := handler.streamStatusManager.StreamInfo(pathMappingResult.CalculatedPath)
 
-	if ! handler.ensureStreamIsReady(streamInfo, writer) {
+	if !handler.ensureStreamIsReady(streamInfo, writer) {
 		return
 	}
 
@@ -88,7 +88,7 @@ func (handler *StreamHandler) HandleSegmentRequest(writer http.ResponseWriter, r
 }
 
 func (handler *StreamHandler) ensureStreamIsReady(streamInfo StreamInfo, writer http.ResponseWriter) bool {
-	if ! streamInfo.IsReady() {
+	if !streamInfo.IsReady() {
 		writer.Header().Add("Content-Type", "text/plain")
 
 		_, err := fmt.Fprint(writer, "Stream not Ready")
