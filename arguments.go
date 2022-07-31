@@ -11,6 +11,7 @@ type CliArguments struct {
 	HttpListen                      string   `arg:"--listen,env:LISTEN" help:"Address to bind to (is. '::' or '127.0.0.1')"`
 	LifetimeMinutes                 uint32   `arg:"--lifetime,env:LIFETIME" help:"Number of minutes after which the transcoding-results will be deleted, counted from the last visit"`
 	MinimalTranscodeDurationSeconds uint64   `arg:"--minimal-transcode-duration,env:MINIMAL_TRANSCODE_DURATION" help:"Number of seconds after which the transcoding is considered ready"`
+	Acceleration                    string   `arg:"--acceleration,env:ACCELERATION" help:"Use Hardware-Acceleration (Supported Values: none (Uses libx264 on the CPU) and h264_v4l2m2m (Uses the v4l2 m2m Accelerator on newer Raspberry-Pis)"`
 }
 
 func (*CliArguments) Version() string {
@@ -44,6 +45,7 @@ func (c CliArgumentsParser) GetCliArguments() CliArguments {
 		c.cliArguments.HttpPort = "8048"
 		c.cliArguments.LifetimeMinutes = 1440
 		c.cliArguments.MinimalTranscodeDurationSeconds = 60
+		c.cliArguments.Acceleration = "none"
 
 		arg.MustParse(&c.cliArguments)
 		c.parsed = true
