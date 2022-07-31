@@ -8,7 +8,7 @@ type CliArguments struct {
 	PlayerExtensions                []string `arg:"env:PLAYER_EXTENSIONS" help:"List of file-extensions for which a player is offered"`
 	TempDir                         string   `arg:"--temp-dir,env:TEMP_DIR" help:"Temporary directory where the transcoding-results will be stored"`
 	HttpPort                        string   `arg:"--port,env:PORT" help:"Port to bind to"`
-	HttpListen                      string   `arg:"--listen,env:LISTEN" help:"Address to bind to (is. '::' or '127.0.0.1')"`
+	HttpListen                      string   `arg:"--listen,env:LISTEN" help:"Address to bind to (leave empty to listen on all Interfaces')"`
 	LifetimeMinutes                 uint32   `arg:"--lifetime,env:LIFETIME" help:"Number of minutes after which the transcoding-results will be deleted, counted from the last visit"`
 	MinimalTranscodeDurationSeconds uint64   `arg:"--minimal-transcode-duration,env:MINIMAL_TRANSCODE_DURATION" help:"Number of seconds after which the transcoding is considered ready"`
 }
