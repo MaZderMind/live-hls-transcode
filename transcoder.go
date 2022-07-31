@@ -193,7 +193,7 @@ func (handle TranscoderHandle) ProcessedPercent() float64 {
 }
 
 func (handle *TranscoderHandle) Stop() {
-	if ! handle.isRunning {
+	if !handle.isRunning {
 		return
 	}
 
@@ -216,7 +216,7 @@ func (handle *TranscoderHandle) disarm() {
 func (handle *TranscoderHandle) readStdOut() {
 	reader := bufio.NewReader(handle.stdOut)
 
-	for ; ; {
+	for {
 		line, err := reader.ReadString('\n')
 		if err == io.EOF {
 			handle.checkExitCode()

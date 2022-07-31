@@ -1,10 +1,9 @@
 package main
 
 import (
+	"github.com/gobuffalo/packr/v2"
 	"log"
 	"net/http"
-
-	"github.com/gobuffalo/packr/v2"
 )
 
 func main() {
