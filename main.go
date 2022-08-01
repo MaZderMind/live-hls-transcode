@@ -14,7 +14,8 @@ func main() {
 	directoryIndex := NewDirectoryIndex(arguments.TranscodeExtensions, arguments.PlayerExtensions)
 	fileHandler := NewFileHandler(arguments.RootDir)
 
-	statusManager := NewStreamStatusManager(arguments.TempDir, arguments.MinimalTranscodeDurationSeconds)
+	transcoder := NewTranscoder(arguments.MinimalTranscodeDurationSeconds, arguments.Acceleration)
+	statusManager := NewStreamStatusManager(arguments.TempDir, transcoder)
 	streamStatusHandler := NewStreamStatusHandler(&statusManager, arguments.LifetimeMinutes)
 	streamHandler := NewStreamHandler(&statusManager, arguments.RootDir)
 	playerHandler := NewPlayerHandler(&statusManager)

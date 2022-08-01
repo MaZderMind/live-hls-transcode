@@ -16,11 +16,13 @@ import (
 
 type Transcoder struct {
 	minimalTranscodeDurationSeconds uint64
+	acceleration                    string
 }
 
-func NewTranscoder(minimalTranscodeDurationMilliseconds uint64) Transcoder {
+func NewTranscoder(minimalTranscodeDurationMilliseconds uint64, acceleration string) Transcoder {
 	return Transcoder{
 		minimalTranscodeDurationMilliseconds,
+		acceleration,
 	}
 }
 
@@ -70,20 +72,21 @@ func newTranscoderHandle(
 }
 
 func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolder string) *TranscoderHandle {
+	log.Printf("%s: Probing Duration", sourceFile)
 	duration := transcoder.ProbeDuration(sourceFile)
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	cmd := exec.CommandContext(ctx,
-		"ffmpeg",
+	cmdHead := []string{
 		"-v", "error",
 		"-hide_banner",
 		"-y",
 		"-nostdin",
 		"-progress", "pipe:1",
-		"-threads", "16",
 		"-i", sourceFile,
 		"-analyzeduration", "20000000",
+	}
+
+	cmdAccNone := []string{
+		"-threads", "16",
 		"-c:v:0", "libx264",
 		"-pix_fmt", "yuv420p",
 		"-bufsize", "8192k",
@@ -92,16 +95,46 @@ func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolde
 		"-maxrate", "6000k",
 		"-profile", "main",
 		"-level", "4.0",
+	}
+
+	cmdAccH264V4l2m2m := []string{
+		"-threads", "8",
+		"-vf", "scale=iw*sar:ih,setsar=1:1",
+		"-c:v:0", "h264_v4l2m2m",
+		"-pix_fmt", "yuv420p",
+		"-bufsize", "8192k",
+		"-crf", "20",
+		"-b:v:0", "4M",
+		"-level", "4.0",
+	}
+
+	cmdAudio := []string{
 		"-threads", "8",
 		"-c:a", "aac",
 		"-b:a", "192k",
 		"-ar:a", "48000",
+	}
+
+	cmdTail := []string{
 		"-flags", "+cgop",
 		"-g", "60",
 		"-hls_playlist_type", "event",
 		"-hls_time", "10",
 		path.Join(destinationFolder, "index.m3u8"),
-	)
+	}
+
+	cmdArgs := make([]string, 0)
+	cmdArgs = append(cmdArgs, cmdHead...)
+	if transcoder.acceleration == "h264_v4l2m2m" {
+		cmdArgs = append(cmdArgs, cmdAccH264V4l2m2m...)
+	} else {
+		cmdArgs = append(cmdArgs, cmdAccNone...)
+	}
+	cmdArgs = append(cmdArgs, cmdAudio...)
+	cmdArgs = append(cmdArgs, cmdTail...)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cmd := exec.CommandContext(ctx, "ffmpeg", cmdArgs...)
 
 	log.Printf("%s: Starting Transcoder-Command: %v", sourceFile, cmd)
 	stdOut, err := cmd.StdoutPipe()
