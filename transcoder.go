@@ -104,8 +104,7 @@ func (transcoder Transcoder) StartTranscoder(sourceFile string, destinationFolde
 		"-pix_fmt", "yuv420p",
 		"-bufsize", "8192k",
 		"-crf", "20",
-		"-minrate", "100k",
-		"-maxrate", "6000k",
+		"-b:v:0", "4M",
 		"-level", "4.0",
 	}
 
