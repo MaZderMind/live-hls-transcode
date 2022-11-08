@@ -1,6 +1,7 @@
 video {
     width: 100%;
     background: black;
+    outline: none;
 }
 
 .overlay {
