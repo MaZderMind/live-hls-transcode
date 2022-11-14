@@ -1,5 +1,6 @@
 $(function () {
     const $video = $('video');
+    const $body = $('body');
     const videoEl = $video.get(0);
     const $dialog = $('#resume-dialog');
 
@@ -48,5 +49,22 @@ $(function () {
 
     $video.on('play', function (e) {
         $dialog.css('display', 'none');
+    })
+
+    $body.on('keydown', function(e) {
+        if(e.which == 32 && e.target != videoEl) {
+            if (videoEl.paused) {
+                videoEl.play()
+            }
+            else {
+                videoEl.pause()
+            }
+        }
+    })
+
+    $body.on('keydown', function(e) {
+        if(e.which == 70) {
+            videoEl.requestFullscreen()
+        }
     })
 })
